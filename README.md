@@ -61,6 +61,53 @@ A complete 7-level meta-prompting framework for F* formal verification, demonstr
 
 **Location**: `examples/fstar-framework/`
 
+### 4. Specialized Agents (`agents/`)
+
+**Multi-agent orchestration** for complex meta-prompting operations:
+
+| Agent | Purpose | Use When |
+|-------|---------|----------|
+| **meta2** | Universal framework generator | Need custom domain framework |
+| **MARS** | Multi-domain research synthesis | Complex research projects |
+| **MERCURIO** | Three-plane wisdom (mental/physical/spiritual) | Ethical decision-making |
+| **mercurio-orchestrator** | Research synthesis | Holistic understanding needed |
+
+**See**: `agents/README.md` for detailed documentation
+
+### 5. Slash Commands (`commands/`)
+
+**Quick access** to meta-prompting operations:
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/meta-agent` | Apply V2 meta-prompts | `/meta-agent Design API` |
+| `/meta-command` | Build skills/agents in parallel | `/meta-command --create "PostgreSQL skill"` |
+| `/grok` | Extended reasoning dialogue | `/grok --mode debate "Microservices vs Monolith"` |
+
+**See**: `commands/README.md` for full reference
+
+### 6. Workflows (`workflows/`)
+
+**Pre-configured multi-agent pipelines**:
+
+| Workflow | Agents | Time | Purpose |
+|----------|--------|------|---------|
+| **meta-framework-generation** | meta2, MARS, mercurio-orchestrator, deep-researcher | 15-30min | Generate complete N-level framework |
+| **quick-meta-prompt** | meta-agent | 2-5min | Fast task enhancement |
+
+**See**: `workflows/README.md` for usage patterns
+
+### 7. Skills (`skills/`)
+
+**Domain expertise** for category theory and compositional computation:
+
+| Skill | Expertise | Use For |
+|-------|-----------|---------|
+| **category-master** | Expert category theory | Rigorous mathematical reasoning |
+| **discopy-categorical-computing** | String diagrams, quantum circuits | Compositional computation, QNLP |
+
+**See**: Individual skill directories for documentation
+
 ## Quick Start
 
 ### Using Production Meta-Prompts
@@ -117,11 +164,29 @@ meta-prompting-framework/
 ├── LICENSE                            # MIT License
 ├── .gitignore
 │
-├── agents/
-│   └── meta2/                         # Meta²-prompt generator
-│       ├── agent.md                   # Complete agent definition
-│       ├── README.md                  # Usage guide
-│       └── examples/                  # Generation examples
+├── agents/                            # Specialized agents
+│   ├── README.md                      # Agent documentation
+│   ├── meta2/                         # Meta²-prompt generator
+│   │   ├── agent.md                   # Complete agent definition
+│   │   └── README.md                  # Usage guide
+│   ├── MARS.md                        # Multi-Agent Research Synthesis
+│   ├── MERCURIO.md                    # Mixture of Experts orchestrator
+│   └── mercurio-orchestrator.md       # Research synthesis agent
+│
+├── commands/                          # Slash commands
+│   ├── README.md                      # Command documentation
+│   ├── meta-agent.md                  # Apply V2 meta-prompts
+│   ├── meta-command.md                # Build skills/agents
+│   └── grok.md                        # Extended reasoning dialogue
+│
+├── workflows/                         # Multi-agent workflows
+│   ├── README.md                      # Workflow documentation
+│   ├── meta-framework-generation.yaml # Generate custom frameworks
+│   └── quick-meta-prompt.yaml         # Fast meta-prompt application
+│
+├── skills/                            # Domain expertise skills
+│   ├── category-master/               # Category theory expertise
+│   └── discopy-categorical-computing/ # Compositional computation
 │
 ├── meta-prompts/
 │   ├── v1/                            # V1 research and candidates
