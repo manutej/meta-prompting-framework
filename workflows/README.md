@@ -4,7 +4,27 @@ Pre-configured multi-agent workflows for common meta-prompting operations.
 
 ## Available Workflows
 
-### 1. Meta-Framework Generation (`meta-framework-generation.yaml`)
+### 1. Research Specification Generation (`research-spec-generation.yaml`) 🆕
+
+**Purpose:** Generate high-quality, publication-ready research specifications from papers, ideas, or domain names.
+
+**Agents Used:**
+- `deep-researcher` - Input analysis
+- `MARS` - Literature review and validation
+- `meta2` - Framework generation
+- `MERCURIO` - Ethical review (three-plane)
+- `mercurio-orchestrator` - Final synthesis
+
+**Steps:**
+1. Input Analysis → 2. Literature Review → 3. Categorical Extraction → 4. Framework Generation → 5. Validation → 6. Ethical Review → 7. Synthesis
+
+**Time:** 2-4 hours | **Tokens:** 80K-150K | **Quality:** >95% completeness
+
+**See**: `research-spec-generation.yaml` for complete documentation
+
+---
+
+### 2. Meta-Framework Generation (`meta-framework-generation.yaml`)
 
 **Purpose:** Generate a complete custom meta-prompting framework for any domain.
 
@@ -49,7 +69,7 @@ parameters:
 
 ---
 
-### 2. Quick Meta-Prompt Application (`quick-meta-prompt.yaml`)
+### 3. Quick Meta-Prompt Application (`quick-meta-prompt.yaml`)
 
 **Purpose:** Fast application of production meta-prompts to any task.
 
@@ -88,6 +108,7 @@ parameters:
 
 | Goal | Use Workflow | Why |
 |------|--------------|-----|
+| **Generate research specification** | **research-spec-generation** 🆕 | Publication-ready spec with formal proofs |
 | Need custom framework for domain | **meta-framework-generation** | Complete N-level framework |
 | Quick task enhancement | **quick-meta-prompt** | Fast V2 meta-prompt application |
 
