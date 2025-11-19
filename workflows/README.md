@@ -69,7 +69,23 @@ parameters:
 
 ---
 
-### 3. Quick Meta-Prompt Application (`quick-meta-prompt.yaml`)
+### 3. Research Project to GitHub (`research-project-to-github.yaml`) 🆕 META
+
+**Purpose:** Transform research materials into production-ready GitHub repository (meta-workflow that created this repo!).
+
+**Agents Used:**
+- `meta2`, `MARS`, `deep-researcher`, `mercurio-orchestrator`, `docs-generator`, `practical-programmer`, `devops-github-expert`
+
+**Steps:**
+1. Project Analysis → 2. Structure Design → 3. Infrastructure Creation → 4. Documentation Generation → 5. GitHub Prep → 6. Git Init → 7. GitHub Create → 8. Enhancements → 9. Validation
+
+**Time:** 30-45 minutes | **Tokens:** 100K-200K | **Savings:** 90%+ vs manual
+
+**See**: `research-project-to-github.yaml` and [Meta-Workflow Pattern](../docs/META_WORKFLOW_PATTERN.md)
+
+---
+
+### 4. Quick Meta-Prompt Application (`quick-meta-prompt.yaml`)
 
 **Purpose:** Fast application of production meta-prompts to any task.
 
@@ -108,9 +124,12 @@ parameters:
 
 | Goal | Use Workflow | Why |
 |------|--------------|-----|
+| **Research → GitHub repository** | **research-project-to-github** 🆕 META | Automate entire deployment (90% time savings) |
 | **Generate research specification** | **research-spec-generation** 🆕 | Publication-ready spec with formal proofs |
 | Need custom framework for domain | **meta-framework-generation** | Complete N-level framework |
 | Quick task enhancement | **quick-meta-prompt** | Fast V2 meta-prompt application |
+
+**Note**: 🆕 META = Meta-workflow (operates on workflows/processes, not just data)
 
 ---
 
