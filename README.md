@@ -2,6 +2,24 @@
 
 **Recursive prompt improvement with real LLM integration**
 
+---
+
+## 📌 Version Information
+
+This repository contains **two frameworks** that can be used independently:
+
+- **v1 (meta_prompting_engine)**: ✅ Stable, production-ready recursive meta-prompting
+- **v2 (meta_prompting_framework)**: 🚧 Advanced categorical framework (Phase 1 complete)
+
+**→ See [VERSION_GUIDE.md](VERSION_GUIDE.md) for detailed comparison and usage**
+
+**Quick version check:**
+```bash
+python meta_prompting.py
+```
+
+---
+
 [![Status](https://img.shields.io/badge/status-production--ready-green)]()
 [![Tests](https://img.shields.io/badge/tests-4%2F4%20passing-brightgreen)]()
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)]()
