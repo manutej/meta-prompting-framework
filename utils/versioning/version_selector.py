@@ -157,7 +157,7 @@ def print_version_info():
         print(f"  Location: {details['location']}")
         print()
 
-    print("See VERSION_GUIDE.md for detailed comparison and usage instructions.")
+    print("See docs/VERSION_GUIDE.md for detailed comparison and usage instructions.")
     print()
 
 
