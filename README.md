@@ -9,7 +9,7 @@
 This repository contains **two frameworks** that can be used independently:
 
 - **v1 (meta_prompting_engine)**: ✅ Stable, production-ready recursive meta-prompting
-- **v2 (meta_prompting_framework)**: 🚧 Advanced categorical framework (Phase 1 complete)
+- **v2 (meta_prompting_framework)**: ✅ Advanced categorical framework (Phase 1-2 complete)
 
 **→ See [docs/VERSION_GUIDE.md](docs/VERSION_GUIDE.md) for detailed comparison and usage**
 

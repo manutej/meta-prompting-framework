@@ -70,31 +70,33 @@ def _create_v1_engine(
 
 def _create_v2_engine(llm_client: Optional[Any] = None, **kwargs):
     """Create v2 (meta_prompting_framework) instance."""
-    warnings.warn(
-        "v2 is under active development (Phase 1 complete, Phase 2-5 in progress). "
-        "For production use, consider v1.",
-        UserWarning
-    )
 
     try:
-        # TODO: Import v2 modules when Phase 2 is ready
-        # from meta_prompting_framework.prompts.module import ChainOfThought
-        # return ChainOfThought(llm_client=llm_client, **kwargs)
+        # Phase 2 is now complete! Import modules
+        from meta_prompting_framework.prompts.module import ChainOfThought, Predict
+        from meta_prompting_framework.prompts.signature import ChainOfThoughtSignature
+        from meta_prompting_framework.llm import create_v2_client
 
-        # For now, just show categorical abstractions
-        from meta_prompting_framework.categorical import RMPMonad
+        # Create LLM client if not provided
+        if llm_client is None:
+            llm_client = create_v2_client("claude")
 
-        warnings.warn(
-            "v2 Phase 2 (Signatures, Modules) not yet implemented. "
-            "Returning RMPMonad for now.",
-            UserWarning
-        )
-        return RMPMonad
+        # Get module type from kwargs, default to ChainOfThought
+        module_type = kwargs.pop('module_type', 'chain_of_thought')
+        signature_type = kwargs.pop('signature', ChainOfThoughtSignature)
+
+        if module_type == 'chain_of_thought':
+            return ChainOfThought(signature_type, llm_client=llm_client, **kwargs)
+        elif module_type == 'predict':
+            return Predict(signature_type, llm_client=llm_client, **kwargs)
+        else:
+            # Default to ChainOfThought
+            return ChainOfThought(signature_type, llm_client=llm_client, **kwargs)
 
     except ImportError as e:
         raise ImportError(
-            "v2 (meta_prompting_framework) not available. "
-            "Make sure the categorical module is installed."
+            "v2 (meta_prompting_framework) modules not available. "
+            "Make sure Phase 2 components are installed."
         ) from e
 
 
@@ -115,7 +117,7 @@ def get_version_info() -> dict:
         "v2": {
             "name": "Categorical Meta-Prompting Framework",
             "status": "development",
-            "phase": "Phase 1 complete (categorical foundations)",
+            "phase": "Phase 1-2 complete (categorical + modules)",
             "location": "meta_prompting_framework/",
             "available": False
         }
@@ -131,6 +133,7 @@ def get_version_info() -> dict:
     # Check v2 availability
     try:
         from meta_prompting_framework.categorical import RMPMonad
+        from meta_prompting_framework.prompts import ChainOfThought
         info["v2"]["available"] = True
     except ImportError:
         pass
