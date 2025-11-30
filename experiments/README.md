@@ -1,6 +1,45 @@
 # Experiment Suite: v1 vs v2 Comparison
 
-Comprehensive benchmarking of **v1 (meta_prompting_engine)** vs **v2 (meta_prompting_framework)** across 10 practical use cases.
+Comprehensive benchmarking of **v1 (meta_prompting_engine)** vs **v2 (meta_prompting_framework)** across multiple test suites.
+
+---
+
+## 🔬 Experiment Suites Available
+
+### 1. Comprehensive Non-Trivial Experiments ⭐ NEW
+**File:** `run_comprehensive_experiments.py`
+**Focus:** Hard, real-world problems requiring deep reasoning
+
+**10 Expert-Level Challenges:**
+- Advanced mathematics (non-linear equations)
+- Algorithm design with complexity analysis
+- Distributed system architecture
+- Code optimization with tradeoffs
+- Multi-step logic puzzles
+- ML system design
+- Database query optimization
+- Cryptographic protocol design
+- Compiler optimization theory
+- Production debugging scenarios
+
+**→ See [COMPREHENSIVE_EXPERIMENTS.md](COMPREHENSIVE_EXPERIMENTS.md) for details**
+
+```bash
+# Run all 10 expert-level experiments
+python experiments/run_comprehensive_experiments.py
+
+# Quick sample (first 3)
+python experiments/run_comprehensive_experiments.py --quick
+
+# Run specific experiment
+python experiments/run_comprehensive_experiments.py --experiment 3
+```
+
+---
+
+### 2. Original Practical Use Cases
+**File:** `run_suite.py`
+**Focus:** Common software development tasks
 
 ---
 
