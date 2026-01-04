@@ -4,6 +4,8 @@
 **Status**: Complete
 **Purpose**: Consolidate all ADR research into actionable recommendations
 
+> **HIGH PRIORITY**: See [000-core-technologies.md](./000-core-technologies.md) for up-to-date documentation on all core libraries (versions, APIs, breaking changes).
+
 ---
 
 ## Executive Summary
