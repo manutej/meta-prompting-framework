@@ -1,0 +1,388 @@
+# Multi-Project Site Generator - Schema Definition
+# Version: 1.0.0
+#
+# This schema defines the structure for generating 100+ sites in parallel
+# using a compressed-intent DSL with orchestration verbs
+
+$schema: "http://json-schema.org/draft-07/schema#"
+$id: "https://meta-prompting-framework.dev/schemas/sites.yaml"
+title: Multi-Project Sites Schema
+description: |
+  Declarative configuration for generating multiple sites at scale.
+  Supports compressed notation, inheritance via defaults, and multi-plane views.
+
+definitions:
+  # ============================================================
+  # BRAND & DESIGN SYSTEM
+  # ============================================================
+  brand:
+    type: object
+    properties:
+      palette:
+        type: string
+        description: "Named color palette (ocean, emerald, sunset, coral, etc.)"
+        enum: [ocean, emerald, sunset, coral, slate, indigo, rose, amber, custom]
+      colors:
+        type: object
+        description: "Custom color tokens when palette=custom"
+        properties:
+          primary: { type: string, pattern: "^#[0-9A-Fa-f]{6}$" }
+          secondary: { type: string, pattern: "^#[0-9A-Fa-f]{6}$" }
+          accent: { type: string, pattern: "^#[0-9A-Fa-f]{6}$" }
+          background: { type: string, pattern: "^#[0-9A-Fa-f]{6}$" }
+          foreground: { type: string, pattern: "^#[0-9A-Fa-f]{6}$" }
+      font:
+        type: string
+        description: "Primary font family"
+        enum: [inter, geist, system, manrope, cal-sans, satoshi, custom]
+      font_custom:
+        type: string
+        description: "Custom font URL or name when font=custom"
+      logo:
+        type: string
+        description: "Path to logo asset"
+      favicon:
+        type: string
+        description: "Path to favicon"
+
+  # ============================================================
+  # STACK CONFIGURATION
+  # ============================================================
+  stack:
+    type: object
+    properties:
+      framework:
+        type: string
+        enum: [next, remix, astro, vite-spa, nuxt, sveltekit]
+        default: next
+      ui_kit:
+        type: string
+        description: "Component library to use"
+        enum: [shadcn, radix, chakra, mantine, headless, custom]
+        default: shadcn
+      styling:
+        type: string
+        enum: [tailwind, css-modules, styled-components, emotion, vanilla-extract]
+        default: tailwind
+      deploy:
+        type: string
+        enum: [vercel, netlify, cloudflare, aws, self-hosted]
+        default: vercel
+      docs_engine:
+        type: string
+        enum: [contentlayer, fumadocs, nextra, docusaurus, astro-starlight]
+      auth:
+        type: string
+        enum: [clerk, auth0, nextauth, supabase, firebase, custom, none]
+        default: none
+      cms:
+        type: string
+        enum: [builder.io, sanity, contentful, strapi, payload, mdx, none]
+        default: none
+      database:
+        type: string
+        enum: [postgres, supabase, planetscale, turso, mongodb, none]
+        default: none
+
+  # ============================================================
+  # FEATURES
+  # ============================================================
+  features:
+    type: object
+    properties:
+      blog: { type: boolean, default: false }
+      docs: { type: boolean, default: false }
+      auth: { type: boolean, default: false }
+      billing: { type: string, enum: [stripe, paddle, lemonsqueezy, none], default: none }
+      analytics: { type: string, enum: [plausible, fathom, posthog, google, none], default: none }
+      search: { type: string, enum: [algolia, typesense, meilisearch, pagefind, none], default: none }
+      contact_form: { type: boolean, default: false }
+      newsletter: { type: boolean, default: false }
+      i18n: { type: boolean, default: false }
+      dark_mode: { type: boolean, default: true }
+
+  # ============================================================
+  # LAYOUT BLOCKS (compressed notation)
+  # ============================================================
+  layout_block:
+    type: string
+    description: |
+      Compressed layout notation using + separator.
+      Examples:
+        - hero+features+social-proof+cta
+        - pricing-3-tiers+faq+cta
+        - sidebar+content+search
+    pattern: "^[a-z0-9-]+(\\+[a-z0-9-]+)*$"
+
+  # ============================================================
+  # PAGE DEFINITION
+  # ============================================================
+  page:
+    type: object
+    properties:
+      layout:
+        $ref: "#/definitions/layout_block"
+      source:
+        type: string
+        description: "Content source path (for docs/blog)"
+      seed_posts:
+        type: integer
+        description: "Number of AI-generated seed posts"
+        minimum: 0
+        maximum: 50
+      components:
+        type: array
+        description: "Additional component overrides"
+        items:
+          type: object
+          properties:
+            slot: { type: string }
+            component: { type: string }
+            props: { type: object }
+
+  # ============================================================
+  # WORKFLOWS
+  # ============================================================
+  workflow:
+    type: object
+    properties:
+      on_init:
+        type: array
+        description: "Steps to run on site initialization"
+        items:
+          type: string
+          enum:
+            - scaffold
+            - design
+            - generate-copy
+            - generate-images
+            - wire-cms
+            - wire-docs
+            - stub-routes
+            - deploy
+      on_change:
+        type: array
+        description: "Steps to run on site changes"
+        items:
+          type: string
+          enum:
+            - validate
+            - run-tests
+            - build
+            - deploy-canary
+            - deploy-production
+            - sync-cms
+            - notify
+      on_deploy:
+        type: array
+        items:
+          type: string
+          enum:
+            - warm-cache
+            - invalidate-cdn
+            - notify
+            - run-lighthouse
+
+  # ============================================================
+  # SITE DEFINITION
+  # ============================================================
+  site:
+    type: object
+    required: [id]
+    properties:
+      id:
+        type: string
+        pattern: "^[a-z][a-z0-9-]*$"
+        description: "Unique site identifier (kebab-case)"
+      name:
+        type: string
+        description: "Human-readable site name"
+      type:
+        type: string
+        enum: [marketing, docs, app, landing, blog, ecommerce, portfolio, saas]
+        default: marketing
+      audience:
+        type: string
+        description: "Target audience description"
+      tone:
+        type: string
+        enum: [professional, casual, playful, technical, minimal]
+        default: professional
+      goals:
+        type: array
+        description: "Site goals (lead-gen, newsletter, sales, education)"
+        items:
+          type: string
+      language:
+        type: string
+        default: en
+      brand:
+        $ref: "#/definitions/brand"
+      stack:
+        $ref: "#/definitions/stack"
+      features:
+        $ref: "#/definitions/features"
+      pages:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/page"
+      workflows:
+        $ref: "#/definitions/workflow"
+      metadata:
+        type: object
+        description: "Additional site-specific metadata"
+        additionalProperties: true
+
+  # ============================================================
+  # VIEWS / PLANES
+  # ============================================================
+  plane:
+    type: object
+    properties:
+      focus:
+        type: array
+        description: "Fields to show in this plane view"
+        items:
+          type: string
+      source:
+        type: string
+        description: "Source path for this plane (for code views)"
+      renderer:
+        type: string
+        enum: [table, tree, graph, code, json, kanban]
+        default: table
+
+  # ============================================================
+  # INTEGRATIONS
+  # ============================================================
+  builder_sync:
+    type: object
+    properties:
+      site:
+        type: string
+        description: "Site ID to sync"
+      builder_entry:
+        type: string
+        description: "Builder.io entry ID"
+      page:
+        type: string
+        description: "Page key to sync"
+      direction:
+        type: string
+        enum: [to-builder, from-builder, bidirectional]
+        default: bidirectional
+
+  plasmic_variant:
+    type: object
+    properties:
+      site:
+        type: string
+      variant:
+        type: string
+        description: "Plasmic variant name"
+
+# ============================================================
+# ROOT SCHEMA
+# ============================================================
+type: object
+required: [version]
+properties:
+  version:
+    type: string
+    enum: [v1, v2]
+    default: v1
+
+  defaults:
+    type: object
+    description: "Default values inherited by all sites"
+    properties:
+      stack:
+        $ref: "#/definitions/stack"
+      brand:
+        $ref: "#/definitions/brand"
+      features:
+        $ref: "#/definitions/features"
+      workflows:
+        $ref: "#/definitions/workflow"
+
+  sites:
+    type: array
+    description: "List of site configurations"
+    items:
+      $ref: "#/definitions/site"
+
+  views:
+    type: object
+    description: "Multi-plane view configurations"
+    properties:
+      planes:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/plane"
+      default_plane:
+        type: string
+        default: business
+
+  integrations:
+    type: object
+    properties:
+      builder:
+        type: object
+        properties:
+          api_key:
+            type: string
+            description: "Builder.io API key (use env var reference)"
+          space_id:
+            type: string
+          model:
+            type: string
+            default: page
+          sync:
+            type: array
+            items:
+              $ref: "#/definitions/builder_sync"
+      plasmic:
+        type: object
+        properties:
+          project_id:
+            type: string
+          api_key:
+            type: string
+          variants:
+            type: array
+            items:
+              $ref: "#/definitions/plasmic_variant"
+      github:
+        type: object
+        properties:
+          org:
+            type: string
+          template_repo:
+            type: string
+          auto_create_repos:
+            type: boolean
+            default: false
+
+  orchestration:
+    type: object
+    description: "Parallel execution settings"
+    properties:
+      concurrency:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 10
+      batch_size:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+      retry_strategy:
+        type: string
+        enum: [exponential, linear, none]
+        default: exponential
+      max_retries:
+        type: integer
+        minimum: 0
+        maximum: 5
+        default: 3

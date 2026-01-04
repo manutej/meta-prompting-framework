@@ -1,0 +1,323 @@
+# Multi-Project Site Generator - Example Configuration
+# This file demonstrates generating 10 sites with various configurations
+# Run: site.plan --all | site.apply type=marketing steps=scaffold,design
+
+version: v1
+
+# ============================================================
+# DEFAULTS - Applied to all sites unless overridden
+# ============================================================
+defaults:
+  stack:
+    framework: next
+    ui_kit: shadcn
+    styling: tailwind
+    deploy: vercel
+  brand:
+    palette: ocean
+    font: inter
+  features:
+    blog: true
+    docs: false
+    auth: false
+    dark_mode: true
+    analytics: plausible
+
+# ============================================================
+# VIEW PLANES - Different abstraction layers
+# ============================================================
+views:
+  planes:
+    business:
+      focus: [id, name, type, goals, audience]
+      renderer: table
+    pages:
+      focus: [id, pages.*, layout]
+      renderer: tree
+    components:
+      source: packages/ui/src
+      renderer: tree
+    pipeline:
+      source: turbo.json
+      renderer: graph
+    deploy:
+      focus: [id, stack.deploy, workflows.on_deploy]
+      renderer: kanban
+  default_plane: business
+
+# ============================================================
+# INTEGRATIONS - Visual builders & external services
+# ============================================================
+integrations:
+  builder:
+    api_key: ${BUILDER_API_KEY}
+    space_id: default-space
+    model: page
+    sync:
+      - site: alpha
+        builder_entry: alpha-home
+        page: home
+      - site: alpha
+        builder_entry: alpha-pricing
+        page: pricing
+
+  github:
+    org: acme-sites
+    template_repo: site-template
+    auto_create_repos: true
+
+# ============================================================
+# NAMED WORKFLOWS - Compact notation with + syntax
+# ============================================================
+workflows:
+  # Simple workflows (compact string notation)
+  init: scaffold+design+generate-copy+deploy
+  update-copy: generate-copy
+  full-redeploy: validate+build+deploy
+  visual-sync: sync-visual+validate+deploy
+
+  # Complex pipeline with parallelism
+  marketing-refresh:
+    on: command
+    steps:
+      - fork: [regen-copy, sync-visual]
+      - wait-all
+      - deploy:
+          env: production
+
+  docs-publish:
+    steps:
+      - validate
+      - build
+      - deploy:
+          env: docs
+
+# ============================================================
+# ORCHESTRATION SETTINGS
+# ============================================================
+orchestration:
+  concurrency: 10
+  batch_size: 20
+  retry_strategy: exponential
+  max_retries: 3
+
+# ============================================================
+# SITES - The actual site definitions
+# ============================================================
+sites:
+  # ----------------------------------------------------------
+  # MARKETING SITES
+  # ----------------------------------------------------------
+  - id: alpha
+    name: Alpha Analytics
+    type: marketing
+    audience: Data-driven startups and growth teams
+    tone: professional
+    goals:
+      - lead-gen
+      - newsletter
+    brand:
+      palette: emerald
+      logo: assets/alpha-logo.svg
+    features:
+      newsletter: true
+      contact_form: true
+    pages:
+      home:
+        layout: hero+features+social-proof+cta
+      pricing:
+        layout: pricing-3-tiers+faq+cta
+      about:
+        layout: team+values+timeline
+      blog:
+        layout: index+post
+        seed_posts: 5
+    # Site-specific workflow overrides (or use named workflow)
+    # Can reference named workflow: workflow: init
+    # Or define inline with compact notation
+    workflow: init
+    on_change: validate+build+deploy-canary
+
+  - id: beta-marketing
+    name: Beta Marketing Hub
+    type: marketing
+    audience: Small business owners
+    tone: casual
+    goals:
+      - sales
+      - demo-requests
+    brand:
+      palette: sunset
+    pages:
+      home:
+        layout: hero+benefits+testimonials+cta
+      pricing:
+        layout: pricing-comparison+cta
+      demo:
+        layout: form+calendar
+    workflow: init
+
+  # ----------------------------------------------------------
+  # DOCUMENTATION SITES
+  # ----------------------------------------------------------
+  - id: gamma-docs
+    name: Gamma SDK Documentation
+    type: docs
+    audience: Developers and technical teams
+    tone: technical
+    goals:
+      - education
+      - api-adoption
+    stack:
+      framework: next
+      docs_engine: fumadocs
+    features:
+      docs: true
+      blog: false
+      search: pagefind
+    pages:
+      docs:
+        layout: sidebar+content+search
+        source: ./content/gamma-docs
+      changelog:
+        layout: timeline+rss
+      api-reference:
+        layout: openapi+playground
+    workflow: scaffold+wire-docs+deploy
+    on_change: validate+build+deploy-production
+
+  - id: delta-docs
+    name: Delta Platform Docs
+    type: docs
+    tone: technical
+    stack:
+      docs_engine: contentlayer
+    features:
+      docs: true
+      search: algolia
+    pages:
+      docs:
+        layout: sidebar+content+toc
+        source: ./content/delta
+      guides:
+        layout: cards+grid
+    workflow: scaffold+wire-docs+deploy
+
+  # ----------------------------------------------------------
+  # APPLICATION SITES
+  # ----------------------------------------------------------
+  - id: epsilon-app
+    name: Epsilon Dashboard
+    type: app
+    audience: Enterprise teams
+    tone: professional
+    stack:
+      framework: remix
+      auth: clerk
+      database: supabase
+    features:
+      auth: true
+      billing: stripe
+    pages:
+      app-shell:
+        layout: sidebar+topbar+content
+      dashboard:
+        layout: stats+charts+tables
+      settings:
+        layout: tabs+forms
+    workflow: scaffold+stub-routes
+    on_change: run-tests+deploy-canary
+
+  - id: zeta-app
+    name: Zeta Workspace
+    type: app
+    stack:
+      framework: next
+      auth: nextauth
+      database: postgres
+    features:
+      auth: true
+    pages:
+      app-shell:
+        layout: topbar+sidebar+content
+      projects:
+        layout: kanban+modals
+    workflow: scaffold+stub-routes
+
+  # ----------------------------------------------------------
+  # LANDING PAGES
+  # ----------------------------------------------------------
+  - id: eta-landing
+    name: Eta Product Launch
+    type: landing
+    tone: playful
+    goals:
+      - waitlist
+      - virality
+    brand:
+      palette: rose
+    features:
+      newsletter: true
+    pages:
+      home:
+        layout: hero-video+features-grid+waitlist
+    workflow: init
+
+  - id: theta-landing
+    name: Theta Conference
+    type: landing
+    goals:
+      - registrations
+    brand:
+      palette: indigo
+    pages:
+      home:
+        layout: hero+speakers+schedule+sponsors+register
+    workflow: scaffold+design+deploy
+
+  # ----------------------------------------------------------
+  # E-COMMERCE SITES
+  # ----------------------------------------------------------
+  - id: iota-shop
+    name: Iota Marketplace
+    type: ecommerce
+    audience: Design enthusiasts
+    stack:
+      framework: next
+      cms: sanity
+    features:
+      billing: stripe
+      search: meilisearch
+    pages:
+      home:
+        layout: hero+featured-products+categories
+      products:
+        layout: grid+filters+sort
+      product:
+        layout: gallery+details+reviews+add-to-cart
+      cart:
+        layout: items+summary+checkout
+    workflow: scaffold+wire-cms+deploy
+    on_change: validate+build+deploy-production
+
+  # ----------------------------------------------------------
+  # PORTFOLIO SITES
+  # ----------------------------------------------------------
+  - id: kappa-portfolio
+    name: Kappa Creative Studio
+    type: portfolio
+    audience: Creative professionals
+    tone: minimal
+    brand:
+      palette: slate
+      font: satoshi
+    pages:
+      home:
+        layout: hero-minimal+work-grid
+      work:
+        layout: project-grid+filters
+      project:
+        layout: hero-image+details+gallery+next-prev
+      about:
+        layout: bio+skills+contact
+    workflow: scaffold+design+deploy
