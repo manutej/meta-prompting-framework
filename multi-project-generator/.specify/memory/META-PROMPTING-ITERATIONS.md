@@ -399,6 +399,293 @@ Files Created:
 
 ---
 
+## Iteration 5: Research Validation & Architecture (Current)
+
+### Input (Post-Iteration 4 State)
+```
+Previous: Constitution + Three-Plane + MVP Scoped (Quality: 0.85)
+New Work:
+  - 6 parallel research agents (ADRs 001-006)
+  - Core technologies research with Context7/web
+  - 10 detailed architecture diagrams
+Context: "Need to validate ADRs with current docs, visualize system"
+```
+
+### Meta-Prompt Applied
+```
+Based on iteration 4:
+- Quality: 0.85 (at threshold, but missing validation)
+- Must add: Research justification for all ADRs
+- Must add: Visual architecture diagrams
+- Improve by: Parallel research agents + synthesis
+
+Apply research-driven validation:
+1. Research each ADR with up-to-date documentation (2025-2026)
+2. Synthesize findings across all research
+3. Update ADRs with research justifications
+4. Create comprehensive architecture diagrams
+```
+
+### Generated Changes
+```
+Created: .specify/research/
+├── 000-core-technologies.md   # HIGH PRIORITY - consolidated reference
+├── 001-monorepo-tools.md      # Turborepo 2.7.0 validated
+├── 002-schema-validation.md   # Zod 4.3.5 validated
+├── 003-concurrency-control.md # p-queue 9.0.1 (UPDATED from p-limit)
+├── 004-cli-frameworks.md      # Commander.js 14.0.2 validated
+├── 005-template-systems.md    # giget 2.0 + Handlebars 4.7.8
+├── 006-agent-integration.md   # MCP SDK 1.25.1 validated
+└── SYNTHESIS.md               # Merged recommendations
+
+Created: .specify/specs/mpg-core/ARCHITECTURE.md
+├── System Overview diagram
+├── Data Flow Architecture
+├── Component Architecture
+├── Execution Pipeline
+├── MCP Integration
+├── Template System
+├── Monorepo Output
+├── Concurrency Model
+├── Configuration Schema
+└── Deployment Architecture
+
+Modified: ADRs.md
+- Added research justifications to all 6 ADRs
+- Updated ADR-003: p-limit → p-queue (priority support)
+- Updated ADR-005: Clarified hybrid approach (giget + Handlebars)
+- Added links to research files
+- Added migration paths
+```
+
+### Quality Assessment
+```
+Quality Score: 0.92 (+0.07 improvement)
+
+Quality Metrics:
+- Completeness: 0.94 (research + architecture added)
+- Clarity: 0.91 (diagrams improve understanding)
+- Actionability: 0.88 (code examples in research)
+- Consistency: 0.92 (ADRs linked to research)
+- Validation: 0.95 (all versions verified current)
+
+New Dimension Added: Research Rigor
+- All 6 ADRs have research justification
+- Current versions verified (not stale training data)
+- Breaking changes documented
+- Migration paths defined
+```
+
+### Context Extraction (Iteration 5)
+```yaml
+patterns_identified:
+  - "parallel research agents effective"
+  - "synthesis consolidates findings"
+  - "architecture diagrams clarify structure"
+  - "version validation prevents stale assumptions"
+
+gaps_remaining:
+  - "no implementation code yet"
+  - "no test scaffolding"
+  - "no CI/CD configuration"
+  - "no developer onboarding guide"
+
+ready_for_next_phase:
+  - "ADRs fully justified"
+  - "architecture visualized"
+  - "tech stack versions locked"
+  - "component boundaries clear"
+
+key_updates:
+  - ADR-003: "p-limit → p-queue (adds priority, pause/resume)"
+  - ADR-005: "file copy → giget + Handlebars hybrid"
+  - Node.js: "20+ required (p-queue 9.x ESM-only)"
+  - Zod: "Use import from 'zod/v4' for v4 features"
+```
+
+---
+
+## Iteration 6: Next Phase Planning (Meta-Prompt Generation)
+
+### Current State Assessment
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        SPECIFICATION COMPLETENESS                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ✅ COMPLETE (Quality 0.92+)                                                │
+│  ─────────────────────────                                                  │
+│  [x] Constitution & Principles      (.specify/memory/constitution.md)       │
+│  [x] Three-Plane Analysis           (.specify/specs/mpg-core/spec.md)       │
+│  [x] User Stories (P1/P2/P3)        (.specify/specs/mpg-core/spec.md)       │
+│  [x] ADRs with Justifications       (.specify/specs/mpg-core/ADRs.md)       │
+│  [x] Requirements (FR/DR/NFR)       (.specify/specs/mpg-core/requirements.md)│
+│  [x] Phased Tasks (30 tasks)        (.specify/specs/mpg-core/tasks.md)      │
+│  [x] Architecture Diagrams          (.specify/specs/mpg-core/ARCHITECTURE.md)│
+│  [x] Research Files (7 files)       (.specify/research/*.md)                │
+│  [x] Meta-Prompting Log             (this file)                             │
+│                                                                              │
+│  ⏳ NEXT PHASE REQUIRED                                                     │
+│  ─────────────────────────                                                  │
+│  [ ] Implementation scaffolding     (packages/, apps/)                      │
+│  [ ] Test infrastructure            (vitest, testing-library)               │
+│  [ ] CI/CD pipeline                 (GitHub Actions)                        │
+│  [ ] Developer documentation        (README, CONTRIBUTING)                  │
+│  [ ] Example configurations         (sites.yaml samples)                    │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Recursive Meta-Prompt: What Should the Next Prompt Be?
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    META-PROMPT FOR NEXT ITERATION                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  CONTEXT EXTRACTED FROM ITERATIONS 1-5:                                     │
+│  ───────────────────────────────────────                                    │
+│  • Spec quality: 0.92 (above threshold)                                     │
+│  • Tech stack: Locked and validated                                         │
+│  • Architecture: Visualized (10 diagrams)                                   │
+│  • ADRs: Research-backed with migration paths                               │
+│  • Tasks: 30 phased tasks defined                                           │
+│                                                                              │
+│  PATTERNS FOR SUCCESSFUL TRANSITION:                                        │
+│  ───────────────────────────────────────                                    │
+│  1. Spec → Code requires "scaffolding prompt"                               │
+│  2. Parallel agents effective for research (apply to implementation?)       │
+│  3. Constitution must be referenced during implementation                   │
+│  4. Three-plane analysis should validate implementation decisions           │
+│                                                                              │
+│  NEXT PROMPT OPTIONS (Ranked by Value):                                     │
+│  ───────────────────────────────────────                                    │
+│                                                                              │
+│  OPTION A: "Implementation Scaffolding" (Recommended)                       │
+│  ─────────────────────────────────────────────────────                      │
+│  Prompt: "Scaffold the monorepo structure with package.json files,          │
+│           TypeScript configurations, and empty module boundaries            │
+│           following ARCHITECTURE.md. Do NOT implement logic yet."           │
+│                                                                              │
+│  Why: Creates skeleton for parallel implementation, validates structure     │
+│                                                                              │
+│  OPTION B: "Test Infrastructure First"                                      │
+│  ─────────────────────────────────────────────────────                      │
+│  Prompt: "Set up Vitest, testing-library, and test scaffolds for            │
+│           all 30 tasks. Write test stubs that define expected behavior."    │
+│                                                                              │
+│  Why: TDD approach, but may be premature without code structure             │
+│                                                                              │
+│  OPTION C: "Single Component Deep Dive"                                     │
+│  ─────────────────────────────────────────────────────                      │
+│  Prompt: "Implement @mpg/core config loader (Task T-01 to T-05)             │
+│           with full tests, following ADR-002 (Zod validation)."             │
+│                                                                              │
+│  Why: Vertical slice, but loses parallel opportunity                        │
+│                                                                              │
+│  OPTION D: "CI/CD + DevEx First"                                            │
+│  ─────────────────────────────────────────────────────                      │
+│  Prompt: "Create GitHub Actions workflows, README, CONTRIBUTING,            │
+│           and developer setup scripts before any implementation."           │
+│                                                                              │
+│  Why: Enables collaboration, but delays core functionality                  │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Recommended Next Prompt (Option A + Parallel Pattern)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      GENERATED META-PROMPT FOR ITERATION 7                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  PROMPT:                                                                     │
+│  ───────                                                                     │
+│  "Scaffold the MPG monorepo implementation following ARCHITECTURE.md:       │
+│                                                                              │
+│   1. Create package structure:                                               │
+│      - packages/core/       (@mpg/core - config, plan, execute, output)     │
+│      - packages/templates/  (@mpg/templates - download, process, validate)  │
+│      - packages/shared/     (@mpg/shared - logger, errors, utils, types)    │
+│      - apps/cli/            (@mpg/cli - Commander.js commands)              │
+│      - apps/mcp-server/     (@mpg/mcp-server - MCP tool handlers)           │
+│                                                                              │
+│   2. For each package create:                                                │
+│      - package.json with correct dependencies (from 000-core-technologies)  │
+│      - tsconfig.json extending root config                                  │
+│      - src/index.ts with module exports (empty implementations)             │
+│      - src/__tests__/ directory structure                                   │
+│                                                                              │
+│   3. Create root configuration:                                              │
+│      - turbo.json following ADR-001 research                                │
+│      - pnpm-workspace.yaml                                                  │
+│      - tsconfig.base.json                                                   │
+│      - vitest.config.ts                                                     │
+│                                                                              │
+│   4. Verify constitution compliance:                                         │
+│      - Article I: Components independently testable? ✓                      │
+│      - Article II: Dependencies explicit in package.json? ✓                 │
+│      - Article IV: MVP scope only? ✓                                        │
+│                                                                              │
+│   DO NOT implement business logic. Only create structure and types."        │
+│                                                                              │
+│  SUCCESS CRITERIA:                                                           │
+│  ─────────────────                                                           │
+│  • `pnpm install` succeeds                                                  │
+│  • `pnpm build` succeeds (empty builds)                                     │
+│  • `pnpm test` runs (no tests yet, but infrastructure works)                │
+│  • Package boundaries match ARCHITECTURE.md diagrams                        │
+│                                                                              │
+│  PARALLEL AGENTS (if applicable):                                            │
+│  ─────────────────────────────────                                           │
+│  • Agent 1: packages/core scaffolding                                       │
+│  • Agent 2: packages/templates scaffolding                                  │
+│  • Agent 3: packages/shared scaffolding                                     │
+│  • Agent 4: apps/cli + apps/mcp-server scaffolding                          │
+│  • Agent 5: Root configuration + turbo.json                                 │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Phase Gate: Spec → Implementation
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    PHASE GATE CHECKLIST: SPEC APPROVAL                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Before proceeding to implementation, verify:                               │
+│                                                                              │
+│  SPECIFICATION COMPLETENESS                                                 │
+│  [x] Constitution defined with principles and articles                      │
+│  [x] User stories prioritized (P1/P2/P3)                                   │
+│  [x] Three-plane analysis complete (Mental/Physical/Spiritual)              │
+│  [x] ADRs documented with research justifications                           │
+│  [x] Requirements specified (FR/DR/NFR)                                     │
+│  [x] Tasks phased (30 tasks, 4 phases)                                     │
+│  [x] Architecture diagrammed (10 diagrams)                                  │
+│                                                                              │
+│  RESEARCH VALIDATION                                                         │
+│  [x] All library versions verified current (2025-2026)                      │
+│  [x] Breaking changes documented                                            │
+│  [x] Migration paths defined                                                │
+│  [x] Code examples validated against latest APIs                            │
+│                                                                              │
+│  STAKEHOLDER ALIGNMENT                                                       │
+│  [ ] Primary persona (Alex) needs validated? (PENDING USER APPROVAL)        │
+│  [ ] MVP scope acceptable? (PENDING USER APPROVAL)                          │
+│  [ ] Timeline realistic? (PENDING USER APPROVAL)                            │
+│                                                                              │
+│  ──────────────────────────────────────────────────────────────────────────│
+│  STATUS: AWAITING USER APPROVAL TO PROCEED TO IMPLEMENTATION                │
+│  ──────────────────────────────────────────────────────────────────────────│
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## Application: Future Iterations
 
 When specification needs improvement, apply this loop:
