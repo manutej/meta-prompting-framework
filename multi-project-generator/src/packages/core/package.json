@@ -1,0 +1,52 @@
+{
+  "name": "@mpg/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Core engine for MPG - config loading, planning, and execution",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./config": {
+      "types": "./dist/config/index.d.ts",
+      "import": "./dist/config/index.js"
+    },
+    "./plan": {
+      "types": "./dist/plan/index.d.ts",
+      "import": "./dist/plan/index.js"
+    },
+    "./execute": {
+      "types": "./dist/execute/index.d.ts",
+      "import": "./dist/execute/index.js"
+    },
+    "./output": {
+      "types": "./dist/output/index.d.ts",
+      "import": "./dist/output/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@mpg/shared": "workspace:*",
+    "@mpg/templates": "workspace:*",
+    "p-queue": "^9.0.1",
+    "p-retry": "^6.2.0",
+    "yaml": "^2.3.4",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^2.0.0"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "mpg",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Multi-Project Site Generator - Generate 10-100 websites in parallel from YAML configuration",
+  "type": "module",
+  "packageManager": "pnpm@9.1.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "prettier": "^3.2.0",
+    "turbo": "^2.7.0",
+    "typescript": "^5.3.0",
+    "vitest": "^2.0.0"
+  }
+}
