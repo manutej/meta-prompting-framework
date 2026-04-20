@@ -1,0 +1,22 @@
+{
+  "name": "intuitionistic-logic-framework",
+  "version": "0.1.0",
+  "description": "Constructive logic tools for intuitionistic reasoning, first-principles thinking, and epistemic analysis - Musk/Thiel/Ramanujan paradigms for Claude Code",
+  "author": {
+    "name": "Manu Luxor",
+    "url": "https://github.com/manutej"
+  },
+  "homepage": "https://github.com/manutej/intuitionistic-logic-framework",
+  "repository": "https://github.com/manutej/intuitionistic-logic-framework",
+  "license": "MIT",
+  "keywords": [
+    "logic",
+    "constructive-proof",
+    "intuitionistic",
+    "epistemology",
+    "first-principles",
+    "type-theory",
+    "curry-howard",
+    "formal-verification"
+  ]
+}
