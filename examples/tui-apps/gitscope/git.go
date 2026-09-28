@@ -152,26 +152,40 @@ func parseStatus(out string) repoStatus {
 			if len(parts) < 9 {
 				continue
 			}
-			addXY(parts[1], parts[8], "", &staged, &unstaged)
+			addXY(parts[1], unquotePath(parts[8]), "", &staged, &unstaged)
 		case '2':
 			parts := strings.SplitN(line, " ", 10)
 			if len(parts) < 10 {
 				continue
 			}
 			path, orig, _ := strings.Cut(parts[9], "\t")
-			addXY(parts[1], path, orig, &staged, &unstaged)
+			addXY(parts[1], unquotePath(path), unquotePath(orig), &staged, &unstaged)
 		case 'u':
 			parts := strings.SplitN(line, " ", 11)
 			if len(parts) < 11 {
 				continue
 			}
-			unstaged = append(unstaged, statusEntry{Path: parts[10], Code: "U"})
+			unstaged = append(unstaged, statusEntry{Path: unquotePath(parts[10]), Code: "U"})
 		case '?':
-			untracked = append(untracked, statusEntry{Path: line[2:], Code: "?"})
+			if len(line) < 3 {
+				continue
+			}
+			untracked = append(untracked, statusEntry{Path: unquotePath(line[2:]), Code: "?"})
 		}
 	}
 	st.Entries = append(append(staged, unstaged...), untracked...)
 	return st
+}
+
+// unquotePath undoes git's C-style path quoting ("a\"b", "\346\227\245").
+func unquotePath(p string) string {
+	if len(p) < 2 || p[0] != '"' || p[len(p)-1] != '"' {
+		return p
+	}
+	if u, err := strconv.Unquote(p); err == nil {
+		return u
+	}
+	return p
 }
 
 func parseStatusHeader(st *repoStatus, line string) {
@@ -217,6 +231,9 @@ func parseBranches(out string) []branch {
 		f := strings.Split(line, fieldSep)
 		if len(f) < 5 {
 			continue
+		}
+		if strings.TrimSpace(f[0]) == "*" && strings.HasPrefix(f[1], "(") {
+			continue // "(HEAD detached at …)" pseudo-entry, not a branch
 		}
 		bs = append(bs, branch{
 			Current:  strings.TrimSpace(f[0]) == "*",
@@ -275,7 +292,7 @@ func shortAge(rel string) string {
 
 func loadStatus(root string) tea.Cmd {
 	return func() tea.Msg {
-		out, err := runGit(root, "status", "--porcelain=v2", "--branch", "--untracked-files=normal")
+		out, err := runGit(root, "-c", "core.quotePath=false", "status", "--porcelain=v2", "--branch", "--untracked-files=normal")
 		if err != nil {
 			return statusMsg{err: err}
 		}

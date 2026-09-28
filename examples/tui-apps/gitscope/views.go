@@ -210,7 +210,7 @@ func renderPane(title string, lines []string, w, h int, focused bool) string {
 	if lipgloss.Width(title) > iw-3 {
 		title = truncPlain(stripANSI(title), maxInt(0, iw-3))
 	}
-	rest := iw - 3 - lipgloss.Width(title)
+	rest := maxInt(0, iw-3-lipgloss.Width(title))
 	var b strings.Builder
 	b.WriteString(bs.Render("╭─ ") + title + bs.Render(" "+strings.Repeat("─", rest)+"╮"))
 	for i := 0; i < ih; i++ {

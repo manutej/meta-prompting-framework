@@ -1136,7 +1136,11 @@ func (m model) completeModal() (tea.Model, tea.Cmd) {
 				mm, c := m.spinStart()
 				return mm, tea.Batch(removePath(m.root, e.Path, "deleted "+e.Path), c)
 			}
-			return m.runAction("discard", "discarded "+e.Path, discardArgSets(e)...)
+			argSets := discardArgSets(e)
+			if e.Staged && m.status.Unborn {
+				argSets = [][]string{{"reset", "-q", "--", e.Path}} // restore --staged needs a HEAD
+			}
+			return m.runAction("discard", "discarded "+e.Path, argSets...)
 		case confirmStash:
 			return m.runAction("stash", "stashed working tree", []string{"stash", "push", "--include-untracked"})
 		}
