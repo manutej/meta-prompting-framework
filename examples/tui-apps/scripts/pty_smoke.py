@@ -46,10 +46,11 @@ def run(binary, cwd, keys, seconds=4.0, cols=100, rows=30):
     return out, status
 
 ansi = re.compile(rb"\x1b\[[0-9;?]*[a-zA-Z]|\x1b\][^\x07]*\x07|\x1b[=>]")
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 apps = [
-    ("./progress-timer/progress-timer", "./progress-timer", [], [b"PROGRESS TIMER", b"%"]),
-    ("./file-browser/file-browser", ".", [b"j", b"j", b"\r", b"/", b"go", b"\x1b", b"\t"], [b"FILE BROWSER", b"tui-apps"]),
-    ("./system-monitor/system-monitor", ".", [b"p", b"+", b"-"], [b"SYSTEM MONITOR", b"CPU", b"MEMORY", b"PID"]),
+    (f"{ROOT}/progress-timer/progress-timer", f"{ROOT}/progress-timer", [], [b"PROGRESS TIMER", b"%"]),
+    (f"{ROOT}/file-browser/file-browser", ROOT, [b"j", b"j", b"\r", b"/", b"go", b"\x1b", b"\t"], [b"FILE BROWSER", b"tui-apps"]),
+    (f"{ROOT}/system-monitor/system-monitor", ROOT, [b"p", b"+", b"-"], [b"SYSTEM MONITOR", b"CPU", b"MEMORY", b"PID"]),
 ]
 ok = True
 for binary, cwd, keys, expect in apps:
