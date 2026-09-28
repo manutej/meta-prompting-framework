@@ -14,7 +14,7 @@ APPS = [
      "space stage · c commit · enter view · / filter · y copy sha · ? help"),
     ("docscope", "Markdown reader with a live outline",
      "Custom Gold/Navy rendering, file tree, outline that tracks the heading under the cursor, spring-animated jumps, a fuzzy file finder and in-document search.",
-     [("29+", "headless tests"), ("~3.4k", "lines of Go"), ("$EDITOR", "round-trip")],
+     [("45", "headless tests"), ("~3.5k", "lines of Go"), ("6", "bugs fixed in red-team")],
      "tab panes · ctrl+p find · / search · [ ] headings · b sidebar · e edit"),
 ]
 
