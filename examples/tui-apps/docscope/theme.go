@@ -10,15 +10,15 @@ import (
 
 // Gold & Navy palette shared by the chrome (styles.go) and the markdown renderer.
 const (
-	ansiGold     = "178"
-	ansiNavy     = "24"
-	ansiDarkNavy = "17"
-	ansiText     = "252"
-	ansiMuted    = "240"
-	ansiSuccess  = "76"
-	ansiWarn     = "220"
-	ansiError    = "196"
-	ansiAccent   = "51"
+	ansiGold     = "#d4a017"
+	ansiNavy     = "#0e1830"
+	ansiDarkNavy = "#1a1407"
+	ansiText     = "#eceae3"
+	ansiMuted    = "#9ca3af"
+	ansiSuccess  = "#22c55e"
+	ansiWarn     = "#fbbf24"
+	ansiError    = "#ef4444"
+	ansiAccent   = "#60a5fa"
 )
 
 var (

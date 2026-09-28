@@ -126,7 +126,7 @@ func (m model) viewHelp() string {
 	off := clampInt(m.helpOff, 0, max(0, len(body)-avail))
 	end := min(len(body), off+avail)
 	shown := body[off:end]
-	lines := []string{titleStyle.Render(fit("alembic — keys", w)), ""}
+	lines := []string{fit(titleStyle.Render("alembic — keys")+mutedStyle.Italic(true).Render("   Liquid gold · empower, don't extract."), w), ""}
 	for _, l := range shown {
 		lines = append(lines, fit(l, w))
 	}

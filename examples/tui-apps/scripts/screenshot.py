@@ -14,6 +14,7 @@ def run(binary, args, cwd, cols, rows, events):
     if pid == 0:
         os.chdir(cwd)
         os.environ["TERM"] = "xterm-256color"
+        os.environ["COLORTERM"] = "truecolor"
         os.environ["COLUMNS"], os.environ["LINES"] = str(cols), str(rows)
         os.execv(binary, [binary] + args)
     fcntl.ioctl(fd, termios.TIOCSWINSZ, struct.pack("HHHH", rows, cols, 0, 0))

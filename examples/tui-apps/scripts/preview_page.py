@@ -31,46 +31,52 @@ def frames_of(path):
 
 def main(outp, *frame_files):
     parts = []
-    parts.append("""<title>Gold and Navy Demo Trio</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap">
+    parts.append("""<title>Cast in Liquid Gold</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap">
 <style>
-:root{--bg:#0b1526;--bg2:#0f1c33;--ink:#e8e4d8;--muted:#8fa0b8;--gold:#d4af37;--gold2:#f0d060;--navy:#1b365d;--term:#05080f;--rule:#1f3557;color-scheme:dark}
-body{background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;padding-block:32px 64px;padding-inline:clamp(16px,4vw,48px);line-height:1.5}
-h1,h2,h3{font-family:"IBM Plex Sans Condensed","IBM Plex Sans",sans-serif;text-wrap:balance;margin:0}
-h1{font-size:clamp(30px,5vw,44px);font-weight:600;letter-spacing:-.01em;color:var(--gold)}
-.lede{max-width:64ch;color:var(--muted);margin-top:8px;font-size:17px}
+:root{--bg:#0f0c06;--bg2:#1a1407;--ink:#eceae3;--muted:#9ca3af;--gold:#d4a017;--amber:#d29e3d;--bronze:#8a6519;--navy:#0e1830;--term:#0a0805;--rule:#2a2a2a;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;padding-block:40px 72px;padding-inline:clamp(16px,4vw,56px);line-height:1.55}
+h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;text-wrap:balance;margin:0;font-weight:500}
+.mark{display:inline-flex;align-items:center;gap:10px;font-family:Inter,sans-serif;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.mark i{display:inline-block;width:28px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+h1{font-size:clamp(38px,6vw,64px);letter-spacing:-.01em;color:var(--ink);margin-top:10px;line-height:1.05}
+h1 em{font-style:italic;color:var(--gold)}
+.lede{max-width:62ch;color:var(--muted);margin-top:14px;font-size:17px}
 .lede b{color:var(--ink);font-weight:500}
-.jump{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
-.jump a{color:var(--gold);text-decoration:none;border:1px solid var(--rule);border-radius:999px;padding:4px 12px;font-size:14px}
+.tag{margin-top:8px;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:19px;color:var(--amber)}
+.jump{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.jump a{color:var(--gold);text-decoration:none;border:1px solid var(--rule);border-radius:999px;padding:5px 14px;font-size:13px;font-family:"JetBrains Mono",monospace}
 .jump a:hover,.jump a:focus-visible{border-color:var(--gold);outline:none}
-section{margin-top:56px;padding-top:24px;border-top:1px solid var(--rule)}
+.seam{height:1px;margin:56px 0 28px;background:linear-gradient(90deg,var(--gold) 0,var(--bronze) 18%,var(--rule) 30%,var(--rule) 62%,var(--bronze) 74%,var(--gold) 88%,transparent 100%)}
 .head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
-.name{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:26px;font-weight:700;color:var(--gold2)}
-h2{font-size:20px;font-weight:500;color:var(--ink)}
+.name{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:24px;font-weight:700;color:var(--gold)}
+h2{font-size:26px;color:var(--ink)}
 .pitch{max-width:70ch;color:var(--muted);margin-top:8px}
 .facts{display:flex;flex-wrap:wrap;gap:12px 28px;margin-top:14px;font-variant-numeric:tabular-nums}
 .facts div{display:flex;flex-direction:column}
-.facts b{font-family:"JetBrains Mono",monospace;font-size:20px;color:var(--ink);font-weight:700}
-.facts span{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.keys{margin-top:12px;font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--gold);background:var(--bg2);display:inline-block;padding:6px 10px;border-radius:6px}
+.facts b{font-family:"Cormorant Garamond",serif;font-size:28px;color:var(--gold);font-weight:600;line-height:1}
+.facts span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.keys{margin-top:14px;font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--amber);background:var(--bg2);display:inline-block;padding:6px 10px;border-radius:4px;border:1px solid var(--rule)}
 figure{margin:24px 0 0}
-figcaption{font-size:14px;color:var(--muted);margin-bottom:8px}
-figcaption::before{content:"▸ ";color:var(--gold)}
-.scroll{overflow-x:auto;border-radius:10px;border:1px solid var(--navy);background:var(--term);box-shadow:0 12px 40px #0009}
+figcaption{font-size:14px;color:var(--muted);margin-bottom:8px;font-family:"Cormorant Garamond",serif;font-size:17px}
+figcaption::before{content:"◆ ";color:var(--gold);font-size:11px;vertical-align:middle}
+.scroll{overflow-x:auto;border-radius:6px;border:1px solid var(--navy);background:var(--term);box-shadow:0 0 0 1px #000 inset,0 16px 48px #000a}
 .term{display:block;white-space:pre;font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.25;padding:12px 14px;width:120ch;box-sizing:content-box}
-.note{margin-top:48px;padding:16px 20px;border:1px solid var(--rule);border-radius:10px;color:var(--muted);max-width:72ch}
+.note{margin-top:56px;padding:18px 22px;border:1px solid var(--rule);border-left:2px solid var(--gold);border-radius:4px;color:var(--muted);max-width:72ch}
 .note b{color:var(--ink);font-weight:500}
 a{color:var(--gold)}
 @media (prefers-reduced-motion:no-preference){.jump a{transition:border-color .15s}}
 </style>
-<h1>Four terminal apps, captured live</h1>
-<p class="lede">Every frame below is a <b>real render</b>: each binary was run in a pseudo-terminal at 120×40, driven with the keys from its demo script, and the screen buffer was converted to HTML. Nothing is mocked or retouched.</p>
+<div class="mark"><i></i>Ormus · terminal console preview</div>
+<h1>Four consoles, <em>cast in liquid gold</em></h1>
+<p class="tag">Liquid gold · empower, don't extract.</p>
+<p class="lede">Every frame below is a <b>real render</b>: each binary was run in a pseudo-terminal at 120×40, driven with the keys from its demo script, and the screen buffer was converted to HTML. Ormus palette and voice throughout; nothing is mocked or retouched.</p>
 <div class="jump">""")
     for name, *_ in APPS:
         parts.append(f'<a href="#{name}">{name}</a>')
     parts.append("</div>")
     for (name, tag, pitch, facts, keys), path in zip(APPS, frame_files):
-        parts.append(f'<section id="{name}"><div class="head"><span class="name">{name}</span><h2>{html.escape(tag)}</h2></div>')
+        parts.append(f'<div class="seam"></div><section id="{name}"><div class="head"><span class="name">{name}</span><h2>{html.escape(tag)}</h2></div>')
         parts.append(f'<p class="pitch">{html.escape(pitch)}</p><div class="facts">')
         for v, l in facts:
             parts.append(f"<div><b>{html.escape(v)}</b><span>{html.escape(l)}</span></div>")

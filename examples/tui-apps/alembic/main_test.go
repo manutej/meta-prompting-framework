@@ -1169,7 +1169,7 @@ func TestQuitKeys(t *testing.T) {
 func TestHeaderShowsMockAndCounts(t *testing.T) {
 	f := newFixture(t)
 	v := f.view()
-	for _, s := range []string{"ALEMBIC", "jev: MOCK", "3 workflows", "7 tasks", "4 agents"} {
+	for _, s := range []string{"ORMUS", "alembic", "jev: MOCK", "3 workflows", "7 tasks", "4 agents"} {
 		if !strings.Contains(v, s) {
 			t.Errorf("header missing %q", s)
 		}

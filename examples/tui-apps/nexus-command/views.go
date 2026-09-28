@@ -99,7 +99,7 @@ func (m model) runState() (string, lipgloss.Style) {
 }
 
 func (m model) viewHeader(w int) string {
-	left := badgeStyle.Render("NEXUS") + headerStyle.Render(" command center ")
+	left := badgeStyle.Render("ORMUS") + headerStyle.Render(" NEXUS · command center ")
 	state, st := m.runState()
 	elapsed := ""
 	if m.running {

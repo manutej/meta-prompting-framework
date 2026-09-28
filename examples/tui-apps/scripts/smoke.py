@@ -17,10 +17,10 @@ ESC, TAB, ENTER, CTRL_K, CTRL_P = b"\x1b", b"\t", b"\r", b"\x0b", b"\x10"
 #            keys [(delay_s, bytes)], expect [markers], any [(m1, m2)] = at least one of)
 SPECS = {
     "nexus-command": dict(
-        first=b"NEXUS",
+        first=b"ORMUS",
         keys=[(0.8, b"r"), (3.0, b"i"), (0.5, TAB), (0.5, b"2"), (0.8, b"3"), (0.8, b"4"), (0.8, b"1"),
               (0.5, CTRL_K), (0.4, b"kil"), (0.6, ESC), (0.4, b"k"), (0.6, b"n"), (0.4, b"?"), (0.8, b"?"), (0.4, b"p"), (0.8, b"p")],
-        expect=[b"NEXUS", b"command center", b"Agents", b"Logs", b"Metrics", b"Researcher", b"Planner",
+        expect=[b"ORMUS", b"NEXUS", b"command center", b"Agents", b"Logs", b"Metrics", b"Researcher", b"Planner",
                 b"pipeline started", b"RUNNING", b"chaos armed", b"keys", b"paused", b"quality"],
         any=[(b"mid-task?", b"is not running")],
     ),
@@ -36,10 +36,10 @@ SPECS = {
         expect=[b"docscope", b"Files", b"Outline", b"Find file"],
     ),
     "alembic": dict(
-        cwd=REPO, args=["--demo"], first=b"ALEMBIC",
+        cwd=REPO, args=["--demo"], first=b"ORMUS",
         keys=[(1.0, b"j"), (0.4, b"j"), (0.4, TAB), (0.4, b"j"), (0.4, TAB), (0.4, b"p"), (0.4, b"status?"), (0.4, ENTER),
               (0.8, b"2"), (1.0, b"3"), (0.6, ENTER), (1.5, b"4"), (0.8, b"1"), (0.5, CTRL_K), (0.4, b"read"), (0.6, ESC), (0.4, b"?"), (0.8, b"?")],
-        expect=[b"ALEMBIC", b"Tasks", b"checkout-service", b"T-1041", b"ping sent", b"Worktrees", b"Packs", b"MOCK", b"Agents"],
+        expect=[b"ORMUS", b"alembic", b"Tasks", b"checkout-service", b"T-1041", b"ping sent", b"Worktrees", b"Packs", b"MOCK", b"Agents"],
     ),
     "progress-timer": dict(first=b"PROGRESS TIMER", keys=[], expect=[b"PROGRESS TIMER", b"%"], settle=2.0),
     "file-browser": dict(cwd=ROOT, first=b"FILE BROWSER", keys=[(0.5, b"j"), (0.3, b"j"), (0.3, ENTER), (0.3, b"/"), (0.3, b"go"), (0.3, ESC), (0.3, TAB)],
@@ -60,7 +60,7 @@ def run(name, spec):
     pid, fd = pty.fork()
     if pid == 0:
         os.chdir(cwd)
-        os.environ.update(TERM="xterm-256color", COLUMNS=str(COLS), LINES=str(ROWS))
+        os.environ.update(TERM="xterm-256color", COLORTERM="truecolor", COLUMNS=str(COLS), LINES=str(ROWS))
         os.execv(binary, [binary] + spec.get("args", []))
     fcntl.ioctl(fd, termios.TIOCSWINSZ, struct.pack("HHHH", ROWS, COLS, 0, 0))
     out, keys = b"", list(spec["keys"])

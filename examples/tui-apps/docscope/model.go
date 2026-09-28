@@ -1035,7 +1035,7 @@ func (m model) viewHeader() string {
 	if len(m.files) == 1 {
 		docs = "1 doc"
 	}
-	badge := styleBadge.Render("docscope")
+	badge := styleBadge.Render("ORMUS") + " " + styleHeaderGold.Render("docscope")
 	avail := m.width - visibleWidth(badge) - visibleWidth(right) - 2
 	rootStr := clip(displayRoot(m.root), max(avail/3, 8))
 	fixed := visibleWidth(rootStr) + 3 + len(docs) + 3

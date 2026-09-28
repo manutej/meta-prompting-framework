@@ -41,7 +41,7 @@ func (m model) View() string {
 
 func (m model) viewNoRepo() string {
 	lines := []string{
-		stBadge.Render("gitscope"),
+		stBadge.Render("ORMUS") + stBarGold.Render(" gitscope"),
 		"",
 		stError.Render("Not a git repository"),
 		stMuted.Render(m.cwd),
@@ -82,7 +82,7 @@ func shortOID(oid string) string {
 
 func (m model) renderHeader() string {
 	clock := stBarMuted.Render(m.now.Format("15:04:05") + " ")
-	badge := stBadge.Render("gitscope")
+	badge := stBadge.Render("ORMUS") + stBarGold.Render(" gitscope")
 	repo := stBarBold.Render("  " + truncPlain(m.repoName, maxInt(8, m.width/4)))
 	var tail []string
 	if m.status.Upstream != "" {

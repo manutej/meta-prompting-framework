@@ -1075,8 +1075,8 @@ func (m model) View() string {
 }
 
 func (m model) viewHeader(w int) string {
-	badge := badgeStyle.Render("ALEMBIC")
-	label := headerDim.Render(" harness ")
+	badge := badgeStyle.Render("ORMUS")
+	label := headerDim.Render(" alembic · harness ")
 	var fresh string
 	switch {
 	case m.feedMissing:
