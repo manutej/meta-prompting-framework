@@ -95,12 +95,18 @@ type Triager struct {
 	Budget Budget
 	Now    func() time.Time
 	calls  []time.Time
-	prev   map[string]float64 // last progress per task, for stall detection
-	prevAt time.Time
+	base   map[string]baseline // progress baseline per task, for stall detection
+}
+
+// baseline is the progress value first seen and when; it resets only when
+// progress changes, so a stall accumulates across ticks of any interval.
+type baseline struct {
+	progress float64
+	since    time.Time
 }
 
 func NewTriager(c Asker, b Budget) *Triager {
-	return &Triager{Client: c, Budget: b, Now: time.Now, prev: map[string]float64{}}
+	return &Triager{Client: c, Budget: b, Now: time.Now, base: map[string]baseline{}}
 }
 
 var stateBase = map[harness.TaskState]float64{
@@ -160,9 +166,9 @@ func (tr *Triager) Deterministic(t *harness.Task, events []harness.Event, pendin
 		s += 0.10
 		tt.Reasons = append(tt.Reasons, fmt.Sprintf("%d ping%s unanswered", pendingPings, plural(pendingPings)))
 	}
-	if prev, ok := tr.prev[t.ID]; ok && t.State == harness.StateRunning && prev == t.Progress && now.Sub(tr.prevAt) >= 5*time.Minute {
+	if b, ok := tr.base[t.ID]; ok && t.State == harness.StateRunning && b.progress == t.Progress && now.Sub(b.since) >= 5*time.Minute {
 		s += 0.10
-		tt.Reasons = append(tt.Reasons, "no progress since last tick")
+		tt.Reasons = append(tt.Reasons, "no progress for "+shortDur(now.Sub(b.since)))
 	}
 	tt.Base = clamp(s, 0, 1)
 	tt.Score = tt.Base
@@ -239,13 +245,19 @@ func (tr *Triager) Run(ctx context.Context, snap *harness.Snapshot, pendingPings
 			tr.sortAndRank(&out)
 		}
 	}
-	tr.prev = map[string]float64{}
+	next := map[string]baseline{}
 	for _, t := range byID {
-		tr.prev[t.ID] = t.Progress
+		if b, ok := tr.base[t.ID]; ok && b.progress == t.Progress {
+			next[t.ID] = b
+		} else {
+			next[t.ID] = baseline{progress: t.Progress, since: start}
+		}
 	}
-	tr.prevAt = start
+	tr.base = next
 	out.Latency = tr.Now().Sub(start)
-	out.CostUSD = float64(out.Usage.InputTokens) / 1e6 * PricePerMillionInput
+	if !out.Mock {
+		out.CostUSD = float64(out.Usage.InputTokens) / 1e6 * PricePerMillionInput
+	}
 	return out
 }
 

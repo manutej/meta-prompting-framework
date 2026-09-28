@@ -10,7 +10,7 @@ unless marked OPEN.
 | nexus-command | ~1.2k | 18 | build · vet · tests · PTY smoke · frames captured |
 | gitscope | ~3.5k | 50 (4 red-team bugs fixed) | same |
 | docscope | ~3.5k | 45 (6 red-team bugs fixed) | same |
-| alembic | ~6k + core | 56 UI + 15 core (7 red-team bugs fixed) | same, plus ONE live Jev call (jev-1.13.0, 586 ms) |
+| alembic | ~7k + core | 70 UI + 22 core (7 red-team bugs fixed) | same, plus live Jev pack call (586 ms) and live triage tick (1 call, 4 tasks, $0.000074) |
 | progress-timer, file-browser, system-monitor | small | 16 / 24 / 22 | reference apps, smoke passes |
 
 Gates: `make test` (all six + alembic core) and `make smoke` (`scripts/smoke.py`, one spec table, real PTY).
@@ -25,6 +25,16 @@ Published preview (four apps): https://claude.ai/artifact/FqYgDgfxNzGBi9g5dompJY
 - Jev: `alembic/docs/JEV.md`. `POST api.typesafe.ai/v1/systemone`, `TYPESAFE_API_KEY`; noul/choice/score; packs in
   `alembic/packs/*.json` with aurum-gate thresholds (`minProbability`/`autoConfidence`/`refuseBelow` → auto/escalate/refuse);
   receipts in `~/.alembic/receipts/`. Mock when no key; `--demo` is mock unless `--live`.
+
+## Triage (observability tick)
+
+`jev/triage.go`: deterministic score per task every tick (state, priority, staleness, errors,
+unanswered pings, progress stall with a persistent baseline), Jev only for ambiguous tasks in
+batched calls under `Budget{MaxTasksPerTick 8, MaxCallsPerHour 60, ChunkSize 6}`. TUI: `t` tick
+now, `s` smart/status sort, `N` what-next (pre-arms the recommended action), chips per row,
+`─ triage ─` in detail, header segment, `--triage-interval` (60s). Cron form:
+`alembic triage --once --json` (mock unless `--live`). On change, a `triage` command is appended
+to the outbox for the harness. Log: `~/.alembic/triage.jsonl`. Docs: `docs/JEV.md` "Triage".
 
 ## OPEN
 

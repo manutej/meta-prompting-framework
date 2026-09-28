@@ -35,6 +35,9 @@ func newPaletteState() paletteState {
 func commands() []command {
 	return []command{
 		{"Ask Jev: is the selected task stuck?", "runs the task-readiness pack on the selected task (J)", func(m model) (model, tea.Cmd) { return m.runTaskReadiness() }},
+		{"Run triage now", "score every task, Jev for the ambiguous ones (t)", func(m model) (model, tea.Cmd) { return m.runTriageNow() }},
+		{"What next?", "select the top-ranked task and arm its action (N)", func(m model) (model, tea.Cmd) { return m.whatNext() }},
+		{"Toggle sort smart / status", "order tasks by triage rank or by state (s)", func(m model) (model, tea.Cmd) { return m.toggleSort() }},
 		{"Ping selected agent", "send a short note to the agent", func(m model) (model, tea.Cmd) { return m.paletteping() }},
 		{"Cancel task", "tell the harness to stop the selected task", func(m model) (model, tea.Cmd) { return m.cancelSelected() }},
 		{"Retry task", "re-queue a failed or blocked task", func(m model) (model, tea.Cmd) { return m.retrySelected() }},

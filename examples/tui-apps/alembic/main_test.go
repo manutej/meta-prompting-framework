@@ -73,7 +73,8 @@ func newFixture(t *testing.T) *fixture {
 		t.Fatal(err)
 	}
 	packs, _ := filepath.Abs("packs")
-	cfg := config{Feed: feed, Outbox: outbox, Packs: packs, Receipts: filepath.Join(dir, "receipts"), Repo: repo, RepoOK: true, Poll: time.Second}
+	cfg := config{Feed: feed, Outbox: outbox, Packs: packs, Receipts: filepath.Join(dir, "receipts"), Repo: repo, RepoOK: true, Poll: time.Second,
+		TriageInterval: 10 * time.Millisecond, TriageTasks: 8, TriageCalls: 60}
 	m := quiet(newModel(cfg))
 	m = resize(m, 120, 40)
 	return &fixture{m: m, repo: repo, wtPath: wtPath, feed: feed, outbox: outbox, cfg: cfg}
@@ -82,7 +83,7 @@ func newFixture(t *testing.T) *fixture {
 // quiet makes a model deterministic for headless tests: no clipboard, no
 // cursor blink and short timers so pumped Cmds resolve immediately.
 func quiet(m model) model {
-	toastTTL, demoInterval, wtInterval = time.Millisecond, time.Millisecond, time.Millisecond
+	toastTTL, demoInterval, wtInterval, triageFirstDelay = time.Millisecond, time.Millisecond, time.Millisecond, time.Millisecond
 	m.copier = func(string) {}
 	for _, c := range []*cursor.Model{&m.composer.input.Cursor, &m.picker.query.Cursor, &m.palette.input.Cursor, &m.tasks.filter.Cursor, &m.jv.file.Cursor, &m.jv.text.Cursor} {
 		c.SetMode(cursor.CursorStatic)
@@ -166,7 +167,7 @@ func (f *fixture) pump(t *testing.T, cmd tea.Cmd, depth int) {
 			f.pump(t, c, depth+1)
 		}
 		return
-	case animTickMsg, pollTickMsg, demoTickMsg, wtTickMsg, toastGoneMsg:
+	case animTickMsg, pollTickMsg, demoTickMsg, wtTickMsg, toastGoneMsg, triageTickMsg:
 		return
 	}
 	mm, next := f.m.Update(msg)

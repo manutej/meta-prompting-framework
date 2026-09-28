@@ -39,7 +39,7 @@ SPECS = {
         cwd=REPO, args=["--demo"], first=b"ORMUS",
         keys=[(1.0, b"j"), (0.4, b"j"), (0.4, TAB), (0.4, b"j"), (0.4, TAB), (0.4, b"p"), (0.4, b"status?"), (0.4, ENTER),
               (0.8, b"2"), (1.0, b"3"), (0.6, ENTER), (1.5, b"4"), (0.8, b"1"), (0.5, CTRL_K), (0.4, b"read"), (0.6, ESC), (0.4, b"?"), (0.8, b"?")],
-        expect=[b"ORMUS", b"alembic", b"Tasks", b"checkout-service", b"T-1041", b"ping sent", b"Worktrees", b"Packs", b"MOCK", b"Agents"],
+        expect=[b"ORMUS", b"alembic", b"Tasks", b"checkout-service", b"T-1041", b"ping sent", b"Worktrees", b"Packs", b"MOCK", b"Agents", b"triage"],
     ),
     "progress-timer": dict(first=b"PROGRESS TIMER", keys=[], expect=[b"PROGRESS TIMER", b"%"], settle=2.0),
     "file-browser": dict(cwd=ROOT, first=b"FILE BROWSER", keys=[(0.5, b"j"), (0.3, b"j"), (0.3, ENTER), (0.3, b"/"), (0.3, b"go"), (0.3, ESC), (0.3, TAB)],

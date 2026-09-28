@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -38,6 +39,11 @@ type config struct {
 	Demo     bool
 	Live     bool // with Demo: use the real Jev client instead of the mock
 	Poll     time.Duration
+
+	TriageInterval time.Duration // 0 disables the scheduled tick
+	TriageTasks    int           // Budget.MaxTasksPerTick
+	TriageCalls    int           // Budget.MaxCallsPerHour
+	TriageLog      string        // append-only JSONL of every tick
 }
 
 // Messages produced by tea.Cmds. Tests inject these directly.
@@ -183,7 +189,9 @@ type model struct {
 	formVals *formValues
 
 	pingsSent map[string]int
+	pingsOpen map[string]string // ping id → task id, until the harness acks it
 	taskJev   map[string]*taskJev
+	triage    triageState
 	copier    func(string)
 	runSeq    int
 }
@@ -215,8 +223,12 @@ func newModel(cfg config) model {
 		client:    jev.NewFromEnv(),
 		now:       time.Now(),
 		pingsSent: map[string]int{},
+		pingsOpen: map[string]string{},
 		taskJev:   map[string]*taskJev{},
 		copier:    copyOSC52,
+	}
+	if m.cfg.TriageLog == "" {
+		m.cfg.TriageLog = filepath.Join(filepath.Dir(cfg.Receipts), "triage.jsonl")
 	}
 	if err != nil {
 		m.feedErr = err.Error()
@@ -233,6 +245,8 @@ func newModel(cfg config) model {
 			m.client.APIKey = ""
 		}
 	}
+	// one Triager per session: it keeps stall detection and the budget window
+	m.triage.tr = jev.NewTriager(m.client, m.triageBudget())
 	m.tasks = newTasksState()
 	m.wt = newWtState()
 	m.jv = newJevState()
@@ -306,6 +320,9 @@ func (m model) Init() tea.Cmd {
 	}
 	if m.animPending {
 		cmds = append(cmds, animTick())
+	}
+	if m.cfg.TriageInterval > 0 {
+		cmds = append(cmds, triageTick(triageFirstDelay))
 	}
 	return tea.Batch(cmds...)
 }
@@ -424,6 +441,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, nil
 
+	case triageTickMsg:
+		if m.cfg.TriageInterval <= 0 {
+			return m, nil
+		}
+		cmds := []tea.Cmd{triageTick(m.cfg.TriageInterval)}
+		if !m.triage.running && len(m.snap.Tasks) > 0 {
+			cmds = append(cmds, m.startTriage(false))
+		}
+		return m, tea.Batch(cmds...)
+
+	case triageDoneMsg:
+		return m.applyTriage(msg)
+
 	case animTickMsg:
 		m.animPending = false
 		if !m.needsAnim() {
@@ -524,6 +554,7 @@ func (m *model) applyRecords(recs []harness.FeedRecord) tea.Cmd {
 		m.lastRecordAt = time.Now()
 	}
 	for _, a := range m.snap.Acks[acksBefore:] {
+		delete(m.pingsOpen, a.PingID)
 		name := m.agentName(a.Agent)
 		cmds = append(cmds, m.ok(name+": "+a.Text))
 	}
@@ -789,10 +820,14 @@ func (m model) updateComposer(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			if text == "" {
 				return m, m.warn("empty ping not sent")
 			}
-			if _, err := m.outbox.Ping(m.composer.agentID, m.composer.taskID, text); err != nil {
+			c, err := m.outbox.Ping(m.composer.agentID, m.composer.taskID, text)
+			if err != nil {
 				return m, m.fail("outbox: " + err.Error())
 			}
 			m.pingsSent[m.composer.agentID]++
+			if m.composer.taskID != "" {
+				m.pingsOpen[c.ID] = m.composer.taskID
+			}
 			return m, m.ok("ping sent → " + m.composer.agent)
 		case composerJev:
 			if m.composer.receipt == nil {
@@ -1095,7 +1130,7 @@ func (m model) viewHeader(w int) string {
 		jv = warnStyle.Render("jev: MOCK")
 	}
 	sep := mutedStyle.Render("  ")
-	left := badge + label + " " + fresh + sep + counts + sep + jv
+	left := badge + label + " " + fresh + sep + counts + sep + jv + sep + m.viewTriageBadge()
 	if m.demo != nil {
 		left += sep + cyanStyle.Render("demo")
 	}

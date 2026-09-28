@@ -68,8 +68,12 @@ func parseFlags(args []string) (config, error) {
 	fs.BoolVar(&cfg.Demo, "demo", false, "run a simulated harness under ~/.alembic/demo (Jev is MOCK unless --live)")
 	fs.BoolVar(&cfg.Live, "live", false, "with --demo: call the real Jev API when TYPESAFE_API_KEY is set")
 	fs.DurationVar(&cfg.Poll, "poll", cfg.Poll, "feed poll interval")
+	fs.DurationVar(&cfg.TriageInterval, "triage-interval", 60*time.Second, "triage tick interval (0 disables the scheduler)")
+	fs.IntVar(&cfg.TriageTasks, "triage-tasks", 8, "tasks sent to Jev per triage tick (0 = deterministic only)")
+	fs.IntVar(&cfg.TriageCalls, "triage-calls", 60, "Jev calls per rolling hour for triage")
 	fs.Usage = func() {
-		fmt.Fprintln(fs.Output(), "usage: alembic [--feed PATH] [--outbox PATH] [--packs DIR] [--receipts DIR] [--repo DIR] [--demo [--live]] [--poll 500ms]")
+		fmt.Fprintln(fs.Output(), "usage: alembic [--feed PATH] [--outbox PATH] [--packs DIR] [--receipts DIR] [--repo DIR] [--demo [--live]] [--poll 500ms] [--triage-interval 60s] [--triage-tasks 8] [--triage-calls 60]")
+		fmt.Fprintln(fs.Output(), "       alembic triage [--feed PATH] [--outbox PATH] [--once] [--json] [--interval 60s] [--tasks 8] [--calls 60] [--live] [--demo]")
 		fs.PrintDefaults()
 	}
 	if err := fs.Parse(args); err != nil {
@@ -98,12 +102,16 @@ func setupDemo(cfg *config) error {
 	}
 	cfg.Feed = filepath.Join(dir, "feed.jsonl")
 	cfg.Outbox = filepath.Join(dir, "outbox.jsonl")
+	cfg.TriageLog = filepath.Join(dir, "triage.jsonl")
 	_ = os.Remove(cfg.Feed)
 	_ = os.Remove(cfg.Outbox)
 	return harness.NewDemo(cfg.Feed, cfg.Outbox).Seed(cfg.Repo)
 }
 
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "triage" {
+		os.Exit(runTriageCLI(os.Args[2:], os.Stdout, os.Stderr))
+	}
 	cfg, err := parseFlags(os.Args[1:])
 	if err != nil {
 		if err == flag.ErrHelp {

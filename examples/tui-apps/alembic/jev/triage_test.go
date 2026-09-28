@@ -87,11 +87,25 @@ func TestStallDetectionAcrossTicks(t *testing.T) {
 	tr.Now = func() time.Time { return now }
 	snap := snapWith(task("r", harness.StateRunning, 0, time.Minute))
 	first := tr.Run(context.Background(), snap, nil)
-	now = t0.Add(6 * time.Minute)
+	// one-minute ticks: the baseline must survive them and fire at the 5-minute mark
+	for i := 1; i <= 4; i++ {
+		now = t0.Add(time.Duration(i) * time.Minute)
+		snap.Tasks["r"].Updated = now.Add(-time.Minute)
+		if got := tr.Run(context.Background(), snap, nil); strings.Contains(strings.Join(got.Get("r").Reasons, ","), "no progress") {
+			t.Fatalf("stall fired too early at tick %d", i)
+		}
+	}
+	now = t0.Add(5 * time.Minute)
 	snap.Tasks["r"].Updated = now.Add(-time.Minute)
-	second := tr.Run(context.Background(), snap, nil)
-	if second.Get("r").Score <= first.Get("r").Score || !strings.Contains(strings.Join(second.Get("r").Reasons, ","), "no progress") {
-		t.Fatalf("unchanged progress over 6 min should add a stall reason: %+v", second.Get("r"))
+	fifth := tr.Run(context.Background(), snap, nil)
+	if fifth.Get("r").Score <= first.Get("r").Score || !strings.Contains(strings.Join(fifth.Get("r").Reasons, ","), "no progress for 5m") {
+		t.Fatalf("unchanged progress over 5 min of 1-min ticks should add a stall reason: %+v", fifth.Get("r"))
+	}
+	// progress moves: baseline resets, stall clears
+	snap.Tasks["r"].Progress = 0.6
+	now = t0.Add(6 * time.Minute)
+	if got := tr.Run(context.Background(), snap, nil); strings.Contains(strings.Join(got.Get("r").Reasons, ","), "no progress") {
+		t.Fatal("progress change must reset the stall baseline")
 	}
 }
 
@@ -134,8 +148,8 @@ func TestJevConsultedOnlyForAmbiguousAndMerged(t *testing.T) {
 	if out.Get("fresh").JevUsed || out.Get("queued").JevUsed {
 		t.Fatal("unambiguous tasks must not be sent to jev")
 	}
-	if out.CostUSD <= 0 || out.CostUSD > 0.001 || !out.Mock {
-		t.Fatalf("cost/mock: %v %v", out.CostUSD, out.Mock)
+	if out.CostUSD != 0 || !out.Mock || out.Usage.InputTokens != 1000 {
+		t.Fatalf("mock ticks are free but still report usage: cost=%v mock=%v usage=%+v", out.CostUSD, out.Mock, out.Usage)
 	}
 }
 

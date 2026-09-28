@@ -36,6 +36,9 @@ func helpSections() []helpSection {
 			{"x", "cancel task (confirms)"},
 			{"R", "retry a failed or blocked task"},
 			{"J", "ask Jev: task-readiness"},
+			{"t", "run a triage tick now (score every task)"},
+			{"s", "sort: smart (triage rank) ↔ status"},
+			{"N", "what next: select the top task, arm its action"},
 		}},
 		{"Worktrees", []helpEntry{
 			{"j / k", "move"},
@@ -162,7 +165,7 @@ func (m model) hints() string {
 	}
 	switch m.tab {
 	case tabTasks:
-		return "j/k · tab · / filter · w wf · e done · p ping · x cancel · R retry · J jev · o open · ? help"
+		return "j/k · tab · / filter · w wf · e done · p ping · x cancel · R retry · J jev · t triage · N next · s sort · o open · ? help"
 	case tabWorktrees:
 		return "j/k · n new · d remove · r refresh · enter open · y copy · J jev · ? help"
 	case tabJev:

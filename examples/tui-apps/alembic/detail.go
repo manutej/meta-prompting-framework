@@ -168,6 +168,7 @@ func (m model) viewDetail(w, h int) string {
 		lipgloss.NewStyle().Foreground(stateColor(t.State)).Bold(true).Render(string(t.State))+
 		"  "+gauge(t.Progress, gw, stateColor(t.State))+mutedStyle.Render(fmt.Sprintf(" %3.0f%%", t.Progress*100))+
 		"  "+textStyle.Render(agent), iw))
+	head = append(head, m.renderTriageLines(t.ID, iw)...)
 	wfName, wfEnv := t.Workflow, ""
 	if wf, ok := m.snap.Workflows[t.Workflow]; ok {
 		wfName, wfEnv = wf.Name, wf.Env

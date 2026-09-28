@@ -107,7 +107,13 @@ func (m *model) rebuildRows() {
 		}
 	}
 	m.tasks.rows = m.tasks.rows[:0]
-	line := 0
+	smart := m.triage.sort == sortSmart
+	type group struct {
+		wf   *harness.Workflow
+		ts   []*harness.Task
+		best int
+	}
+	var groups []group
 	for _, wf := range m.sortedWorkflows() {
 		if m.tasks.wfFilter != "" && wf.ID != m.tasks.wfFilter {
 			continue
@@ -129,10 +135,25 @@ func (m *model) rebuildRows() {
 			continue
 		}
 		sortTasks(ts)
-		m.tasks.rows = append(m.tasks.rows, taskRow{kind: rowHeader, wf: wf, line: line})
+		g := group{wf: wf, ts: ts, best: 1 << 30}
+		if smart {
+			m.orderSmart(ts)
+			if len(ts) > 0 {
+				g.best = m.triageRank(ts[0].ID)
+			}
+		}
+		groups = append(groups, g)
+	}
+	if smart {
+		// workflows by their best-ranked task; name order breaks ties
+		sort.SliceStable(groups, func(i, j int) bool { return groups[i].best < groups[j].best })
+	}
+	line := 0
+	for _, g := range groups {
+		m.tasks.rows = append(m.tasks.rows, taskRow{kind: rowHeader, wf: g.wf, line: line})
 		line++
-		for _, t := range ts {
-			m.tasks.rows = append(m.tasks.rows, taskRow{kind: rowTask, wf: wf, task: t, line: line})
+		for _, t := range g.ts {
+			m.tasks.rows = append(m.tasks.rows, taskRow{kind: rowTask, wf: g.wf, task: t, line: line})
 			line += 2
 		}
 	}
@@ -279,11 +300,17 @@ func (m model) updateTasks(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m.retrySelected()
 	case "J":
 		return m.runTaskReadiness()
+	case "s":
+		return m.toggleSort()
+	case "N":
+		return m.whatNext()
 	}
 	if m.tasks.focus == focusDetail {
 		return m.updateDetail(msg)
 	}
 	switch k {
+	case "t":
+		return m.runTriageNow()
 	case "j", "down":
 		m = m.moveTask(1)
 	case "k", "up":
@@ -493,7 +520,7 @@ func (m model) viewTaskList(w, h int) string {
 	mm.ensureVisible(inner)
 	m.tasks.offset = mm.tasks.offset
 	iw := w - 2
-	title := fmt.Sprintf("Tasks · %d", len(m.taskRows()))
+	title := fmt.Sprintf("Tasks · %d · %s", len(m.taskRows()), m.triage.sort)
 	if m.tasks.wfFilter != "" {
 		if wf, ok := m.snap.Workflows[m.tasks.wfFilter]; ok {
 			title += " · " + wf.Name
@@ -560,16 +587,35 @@ func (m model) renderTaskRow(t *harness.Task, w int, selected bool) (string, str
 		head += " " + prio
 	}
 	head += " "
+	// the triage chip is right-aligned; the title is truncated first so the
+	// chip never pushes the row past the pane
+	chip, chipPlain := m.triageChip(t.ID)
+	tw := w
+	if chip != "" {
+		cw := lipgloss.Width(chipPlain)
+		if w-cw-1 < 8 {
+			chip, chipPlain = "", ""
+		} else {
+			tw = w - cw - 1
+		}
+	}
 	if selected {
 		plain := " " + stripANSI(glyph) + " " + t.ID
 		if prio != "" {
 			plain += " " + stripANSI(prio)
 		}
-		l1 := selStyle.Render(fit(plain+" "+t.Title, w))
+		l1 := fit(plain+" "+t.Title, tw)
+		if chip != "" {
+			l1 += " " + chipPlain
+		}
+		l1 = selStyle.Render(l1)
 		l2 := selStyle.Render(fit("     "+t.StatusLine, w))
 		return l1, l2
 	}
-	l1 := fit(head+textStyle.Render(t.Title), w)
+	l1 := fit(head+textStyle.Render(t.Title), tw)
+	if chip != "" {
+		l1 += " " + chip
+	}
 	l2 := fit(mutedStyle.Render("     "+t.StatusLine), w)
 	return l1, l2
 }

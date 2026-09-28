@@ -29,9 +29,29 @@ cd examples/tui-apps/alembic && go build -o alembic . && ./alembic --demo
 | 1:15 | `enter` | Result: a bipolar `no ◀ ░░░████ ▶ yes` bar per yes/no question (green ≥ 0.8 conf, amber, red), a ranked bar chart for the choice, a level ladder with `◀` on the nearest level for the score. Then the banner: **▌REFUSE task.autocontinue** with the reason and thresholds `p≥0.70 · conf≥0.85 · refuse<0.30`. Point at the amber **MOCK — deterministic, not a model** line: "same state, same answer, every time — set `TYPESAFE_API_KEY` and this line disappears." |
 | 1:35 | `T`, pick a task, `enter` | Different state, different verdict. `h` opens the history: `c` marks one, `j`/`k` onto another shows a side-by-side of headline probabilities with green/red deltas. `enter` loads an old receipt back into Result. `esc`. |
 | 1:50 | `s` | **receipt sent → harness** — the receipt goes into the outbox as `jev.receipt`, so the harness can act on the gate. (`y` copies the receipt path; `S` attaches a note.) |
-| 2:00 | `2` | Worktrees: `git worktree list` enriched with ahead/behind, dirty count, HEAD, and which tasks live in each. `n` opens a form to add one; `d` removes (dirty trees need two confirmations); `J` runs the commit-safety / PR-triage pack on the staged or working diff. |
-| 2:15 | `4` | Agents: state, model, current task, last seen, **pings sent / acks received** — the ping from earlier shows `1 / 1`. `enter` jumps to the agent's task. |
-| 2:25 | `ctrl+k`, type `read` | Command palette — every action is a command, fuzzy-matched with gold highlights. `enter` reloads the packs. `?` shows every key per tab (`j`/`k` scroll on short terminals), `?` again closes. `q`. |
+| 1:55 | `1` `t` | **Triage.** "Which of these needs me?" The header already says **triage 40s ago**: a scheduler scored every task ~2 s after start and every 60 s since (`--triage-interval`). `t` runs a tick now; toast **triage: 7 tasks · jev 1 call · $0.0001 · mock**. Every row grew a chip: a 4-cell score bar (gold ≥ 0.6, amber ≥ 0.3) and the recommended action — `✉` ping, `◉` review, `↻` retry, `✖` cancel, `·` wait — with `◆` when Jev was consulted. Only the ambiguous tasks go to Jev, in one batched call, under a budget (`--triage-tasks`, `--triage-calls`); the rest is deterministic and free. The detail pane's `─ triage ─` line shows `#rank · score · next: action (conf)` and the reasons. |
+| 2:05 | `s` `s` | Sort toggles **smart** (triage rank; workflows ordered by their best task) ↔ **status** (the grouping you saw first). The pane title says which. |
+| 2:10 | `N` | **What next?** — selects the top-ranked task and pre-arms its action: a ping composer with `status? (triage: possibly stuck)`, the confirm for retry/cancel, detail focus for review, or the toast *nothing needs you*. `esc`. Every tick is appended to `~/.alembic/triage.jsonl`, and when the top task or any recommendation changes, a `triage` command goes to the outbox so the harness can route on it. |
+| 2:15 | `2` | Worktrees: `git worktree list` enriched with ahead/behind, dirty count, HEAD, and which tasks live in each. `n` opens a form to add one; `d` removes (dirty trees need two confirmations); `J` runs the commit-safety / PR-triage pack on the staged or working diff. |
+| 2:25 | `4` | Agents: state, model, current task, last seen, **pings sent / acks received** — the ping from earlier shows `1 / 1`. `enter` jumps to the agent's task. |
+| 2:35 | `ctrl+k`, type `read` | Command palette — every action is a command, fuzzy-matched with gold highlights. `enter` reloads the packs. `?` shows every key per tab (`j`/`k` scroll on short terminals), `?` again closes. `q`. |
+
+## Triage from cron (no terminal)
+
+The same scheduler runs headless, so a harness can be triaged on a timer:
+
+```bash
+alembic triage --once                 # one tick against ~/.ormus/feed.jsonl, table on stdout
+alembic triage --once --json          # the Triage struct (rank, score, next, reasons, cost)
+alembic triage --interval 5m          # loop until SIGINT
+alembic triage --demo --once --json   # no harness needed: seeds the demo feed
+```
+
+Each tick appends to `~/.alembic/triage.jsonl` and writes a `triage` outbox
+command only when the top task or a recommendation changed since the last
+logged tick. Unacknowledged pings are counted from the outbox. Jev is **MOCK**
+unless you pass `--live` with `TYPESAFE_API_KEY` set — the cron form never
+spends a key by accident. `--tasks` and `--calls` are the budget.
 
 ## If something goes sideways
 
