@@ -1,34 +1,39 @@
 # TUI Apps — Gold & Navy
 
-Three fully functional terminal applications built on the Charmbracelet stack
-(Bubble Tea, Bubbles, Lip Gloss). Gold `#D4AF37` (ANSI 178) for action/focus,
-Navy `#1B365D` (ANSI 24) for structure.
+Terminal applications built on the Charmbracelet stack (Bubble Tea, Bubbles, Lip Gloss,
+Glamour, Huh, Harmonica). Gold `#D4AF37` (ANSI 178) for action and focus, Navy `#1B365D`
+(ANSI 24) for structure. Every app is its own Go module and can be copied out standalone.
 
-| App | What it does | Keys |
-|-----|--------------|------|
-| `progress-timer` | 30-second animated progress timer with live elapsed/remaining | `r` reset · `q` quit |
-| `file-browser` | Two-pane browser: fuzzy-filtered file list + live preview (text, dir listing, binary detection, 64KB cap) | `j/k` move · `enter`/`l` open · `h` back · `/` search · `tab` focus pane · `g/G` · `ctrl+d/u` · `q` |
-| `system-monitor` | Live CPU/memory gauges + 60-sample sparklines, load average, uptime, top processes by CPU (reads `/proc`) | `p`/`space` pause · `+`/`-` sample interval · `q` |
+## Demo apps
 
-## Build & run
+Each has a `DEMO.md` with a timed talk track and an honest "known limits" section.
+
+| App | What it is | Highlights |
+|-----|------------|------------|
+| [`nexus-command`](nexus-command/) | Operator console for the NEXUS multi-agent pipeline | Six agents, spring-animated progress, token-streaming logs, live quality gauge + sparklines, fuzzy command palette (`ctrl+k`), chaos injection with self-healing retry, kill/resume with confirm dialogs, tabs, mouse |
+| [`gitscope`](gitscope/) | lazygit-class git dashboard on a real repository | Accordion panes (status / branches / commits / stash), syntax-highlighted diffs, stage/unstage/discard, commit & new-branch forms (Huh), fuzzy filter, auto-refresh, toasts, mouse |
+| [`docscope`](docscope/) | glow-class markdown reader | Custom Gold/Navy Glamour theme, file tree + live outline with current-heading tracking, spring-animated jump-to-heading, command-palette file finder, in-document search with match highlighting, reading progress bar, `$EDITOR` round-trip |
 
 ```bash
-make build            # builds all three
-./progress-timer/progress-timer
-./file-browser/file-browser
-./system-monitor/system-monitor
+make demo                    # builds the three demo apps
+./nexus-command/nexus-command
+./gitscope/gitscope          # run inside any git repo
+./docscope/docscope ../../docs
 ```
 
-Each app is its own Go module with no shared code, so any one can be copied out standalone.
+## Basic apps
+
+Smaller single-file apps kept as reference implementations: `progress-timer`,
+`file-browser`, `system-monitor`.
 
 ## Verification
 
 ```bash
-make test             # go vet + headless unit tests (drive Update/View directly, no TTY)
-make smoke            # launches each binary in a real PTY, sends keys, checks rendered output
+make test     # go vet + headless tests (drive Update/View directly, no TTY) for all six
+make smoke    # launches every binary in a real PTY, sends keys, checks rendered output
 ```
 
-The unit tests were written by adversarial review agents whose brief was to break
-the apps; every real bug they reproduced was fixed and is pinned by a test.
+Every app went through an adversarial review pass by an independent agent whose brief was to
+break it; each reproduced bug was fixed and pinned by a test.
 
-Requirements: Go 1.21+. `system-monitor` is Linux-only (reads `/proc`).
+Requirements: Go 1.21+, `git` on PATH for gitscope. `system-monitor` is Linux-only.
