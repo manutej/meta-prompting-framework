@@ -22,7 +22,10 @@ func (m model) layoutRects() (agents, logs, metrics rect) {
 	switch m.tab {
 	case tabOverview:
 		if w >= 120 {
-			aw, mw := 38, 34
+			aw, mw := 34, 30
+			if w >= 160 {
+				aw, mw = 38, 34
+			}
 			agents = rect{0, bodyY, aw, bodyH}
 			logs = rect{aw, bodyY, w - aw - mw, bodyH}
 			metrics = rect{w - mw, bodyY, mw, bodyH}
