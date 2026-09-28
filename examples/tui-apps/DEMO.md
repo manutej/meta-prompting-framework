@@ -1,4 +1,4 @@
-# Demo runbook — three TUIs, ~7 minutes
+# Demo runbook — four TUIs, ~10 minutes
 
 Everything below runs offline. No API keys, no network.
 
@@ -6,14 +6,14 @@ Everything below runs offline. No API keys, no network.
 
 ```bash
 cd examples/tui-apps
-make demo                      # builds nexus-command, gitscope, docscope
+make demo                      # builds nexus-command, gitscope, docscope, alembic
 make test                      # optional: 100+ headless tests, ~10 s
 ```
 
 - Terminal: **120×40 or larger**, a 256-colour terminal (iTerm2, Ghostty, WezTerm, Windows Terminal, kitty all fine),
   a Nerd-font-free monospace font is enough (the apps use only Unicode box drawing and block glyphs).
 - Bump the font size until the window is still ≥ 120 columns — the layouts reflow down to 80×24 but look best wide.
-- Keep three tabs open, one per app, already `cd`'d; switching tabs is faster than relaunching.
+- Keep four tabs open, one per app, already `cd`'d; switching tabs is faster than relaunching.
 - Dry-run each `DEMO.md` once so the key sequence is in your fingers.
 
 ## Order and story
@@ -23,8 +23,10 @@ make test                      # optional: 100+ headless tests, ~10 s
 | 1 | [`nexus-command`](nexus-command/DEMO.md) | 2.5 | The engine: agents iterate until quality ≥ 0.85, and self-heal when a test fails. Chaos button is the moment. |
 | 2 | [`gitscope`](gitscope/DEMO.md) | 2 | Real utility on a real repo: stage, diff, commit — all keyboard, all animated, no lag. |
 | 3 | [`docscope`](docscope/DEMO.md) | 2 | Reading experience: custom-themed markdown, live outline, fuzzy finder, search. |
+| 4 | [`alembic`](alembic/DEMO.md) | 3 | The operator seat: every task's status line at a glance, ping an agent, open its PR, gate a diff with a Jev question pack and read the verdict. |
 
 Bridge line between 1 and 2: *"That pipeline is what generated apps like the next two."*
+Bridge line into 4: *"And this is the seat you run all of it from."*
 
 ## One-liners if someone asks
 
