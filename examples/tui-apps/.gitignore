@@ -4,3 +4,4 @@ system-monitor/system-monitor
 nexus-command/nexus-command
 gitscope/gitscope
 docscope/docscope
+__pycache__/
