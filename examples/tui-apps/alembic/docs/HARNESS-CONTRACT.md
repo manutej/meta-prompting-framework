@@ -81,6 +81,15 @@ The agent received a ping (see outbox). Shown as a toast and as a task event.
 {"v":1,"id":"…","ts":"…","type":"jev.receipt","task_id":"T-1041","data":{ …receipt… }}
 ```
 
+```json
+{"v":1,"id":"…","ts":"…","type":"triage","data":{"at":"…","tasks":[{"id":"T-1042","rank":1,"score":0.87,"next":"ping","reasons":["blocked","2 pings unanswered","jev: stuck 0.90"],"jev_used":true}, …],"jev_calls":1,"cost_usd":0.00004,"deterministic":false}}
+```
+
+`triage` is alembic's observability tick (see `docs/JEV.md`, "Triage"): a ranking of every
+task with a recommended next action. It is appended only when the top task or any
+recommended action changed, so a quiet harness produces no traffic. The harness may use
+it to route work (`next` is a suggestion; the harness and its human decide).
+
 `id` is unique per command; a harness that replays the file must treat repeated
 ids as one command (one intent, one effect). The harness should answer a `ping`
 with a `ping.ack` carrying the same `ping_id`. `task.cancel` and `task.retry`

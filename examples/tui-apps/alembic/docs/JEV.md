@@ -105,3 +105,44 @@ reason, and a short digest of the record. Receipts are written once and never ed
 The Jev tab's history (`h`) and compare (`c`) views read them back, so you can watch a
 pack's decisions drift as you tune thresholds, and `s` ships one to the harness as a
 `jev.receipt` command.
+
+## Triage: the observability tick
+
+Question packs answer "should this one action proceed?". Triage answers "which task
+needs a human next?" — every minute, cheaply, for every task.
+
+Two layers, in this order:
+
+1. **Deterministic** (no model, no cost, every tick): a score in 0..1 per task from
+   state (`blocked` 0.75 · `failed` 0.70 · `review` 0.55 · `running` 0.35 · `queued` 0.20 ·
+   `done` 0), plus priority (+0.10 per level), staleness (running and untouched for
+   10 m +0.15, 30 m +0.25), recent errors (+0.05 each, cap 0.15), unanswered pings
+   (+0.10) and no progress since the previous tick (+0.10). Each addend leaves a
+   reason string, so the ranking is explainable without Jev.
+2. **Jev, only for the ambiguous** — tasks that are blocked, in review, failed, stale,
+   erroring or ignoring pings. Their compact states (id, title, state, agent,
+   progress, status line, minutes idle, last five events) go in **one** call with
+   three namespaced questions each: `stuck` (noul), `needs_human` (noul), `next`
+   (choice: wait / ping / review / cancel / retry). Results add up to +0.15·P(stuck)
+   and +0.15·P(needs human) and override the default next action when Jev's
+   confidence is ≥ 0.60.
+
+Budget is declared before anything is spent: `MaxTasksPerTick` (8), `MaxCallsPerHour`
+(60), `ChunkSize` (6 tasks = 18 questions per call). At the ceiling the tick still
+runs, deterministically, and says so (`skipped: "budget: 60 calls/hour reached"`).
+Cost is recorded per tick from `usage.input_tokens` at the list price ($0.042 / M):
+a typical tick with eight ambiguous tasks is on the order of $0.0001.
+
+Every tick is appended to `~/.alembic/triage.jsonl`. When the ranking's top task or any
+recommended action changes, the tick is also sent to the harness as a `triage` outbox
+command, so the harness can route "what next" on the same evidence the operator sees.
+
+Run it from the TUI (`t` now, `--triage-interval 60s` on a timer, `s` to sort by it,
+`N` to jump to the top task with its action pre-armed) or from a real cron:
+
+```
+* * * * *  alembic triage --once --json >> /var/log/alembic-triage.jsonl
+```
+
+Without `TYPESAFE_API_KEY` (or without `--live`) the tick is deterministic-only or uses
+the mock, and every record says so (`"deterministic": true` / `"mock": true`).
