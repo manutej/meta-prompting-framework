@@ -1,0 +1,12 @@
+{
+  "id": "ping-priority",
+  "name": "Ping priority",
+  "description": "Classify a free-text note before sending it to an agent, so urgent pings jump the queue. State = the text of the ping.",
+  "state_source": "text",
+  "order": ["urgent", "blocking", "intent"],
+  "questions": {
+    "urgent": {"type": "noul", "instructions": "The message conveys urgency or time-sensitivity.", "criteria": {"true": "Explicitly time-sensitive or production-impacting", "false": "No urgency expressed"}},
+    "blocking": {"type": "noul", "instructions": "The message reports something that blocks the agent's current task.", "criteria": {"true": "The agent cannot continue until this is resolved", "false": "Informational or optional"}},
+    "intent": {"type": "choice", "instructions": "What does the sender want the agent to do?", "criteria": {"stop": "Halt the current work", "change": "Alter the approach or requirements", "answer": "Reply with information", "continue": "Carry on; acknowledgement only"}}
+  }
+}

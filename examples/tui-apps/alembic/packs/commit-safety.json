@@ -1,0 +1,14 @@
+{
+  "id": "commit-safety",
+  "name": "Commit safety",
+  "description": "Gate a staged diff before an agent commits it. State = staged diff of the selected worktree.",
+  "state_source": "staged_diff",
+  "order": ["secrets", "irreversible", "area", "blast"],
+  "questions": {
+    "secrets": {"type": "noul", "instructions": "The diff adds credentials, tokens, private keys or connection strings.", "criteria": {"true": "A literal secret or key material appears in added lines", "false": "No secret material is added"}},
+    "irreversible": {"type": "noul", "instructions": "The diff performs a destructive or hard-to-reverse operation (drops data, deletes migrations, force-overwrites history, removes rollback paths).", "criteria": {"true": "Something cannot be undone with a plain revert", "false": "A revert restores the previous state"}},
+    "area": {"type": "choice", "instructions": "Which area does the diff mainly touch?", "criteria": {"ui": "Terminal or web UI code", "api": "Handlers, services, business logic", "infra": "CI, deploy, IaC, Dockerfiles", "docs": "Markdown and comments only", "tests": "Test files only"}},
+    "blast": {"type": "score", "instructions": "How large is the blast radius if this change is wrong?", "criteria": ["Cosmetic", "Single feature", "Multiple features", "Whole service", "Multiple services"]}
+  },
+  "gate": {"action": "commit.create", "favorable": {"secrets": "no", "irreversible": "no", "blast": "<=Multiple features"}, "minProbability": 0.75, "autoConfidence": 0.9, "refuseBelow": 0.35}
+}

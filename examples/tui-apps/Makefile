@@ -1,4 +1,4 @@
-DEMO  := nexus-command gitscope docscope
+DEMO  := nexus-command gitscope docscope alembic
 BASIC := progress-timer file-browser system-monitor
 APPS  := $(DEMO) $(BASIC)
 
@@ -18,8 +18,7 @@ test: vet
 	@for a in $(APPS); do echo "== $$a" && (cd $$a && go test ./...) || exit 1; done
 
 smoke: build
-	python3 scripts/pty_smoke.py
-	@for a in $(DEMO); do echo "== $$a" && python3 $$a/smoke.py || exit 1; done
+	python3 scripts/smoke.py $(APPS)
 
 clean:
 	@for a in $(APPS); do rm -f $$a/$$a; done

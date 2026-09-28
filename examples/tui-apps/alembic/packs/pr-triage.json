@@ -1,0 +1,14 @@
+{
+  "id": "pr-triage",
+  "name": "PR triage",
+  "description": "Pre-filter a change before a human or a frontier model reviews it. State = working-tree diff of the selected worktree.",
+  "state_source": "working_diff",
+  "order": ["touches_auth", "has_tests", "severity", "reviewer"],
+  "questions": {
+    "touches_auth": {"type": "noul", "instructions": "The change touches authentication, authorization, session or permission logic.", "criteria": {"true": "Auth/permission code paths are modified", "false": "No auth surface is touched"}},
+    "has_tests": {"type": "noul", "instructions": "The change includes or updates tests covering the modified behavior.", "criteria": {"true": "Test files change alongside the code", "false": "Only production code changes"}},
+    "severity": {"type": "score", "instructions": "If this change has a bug, how severe is the likely impact?", "criteria": ["Cosmetic", "Minor", "Major", "Critical"]},
+    "reviewer": {"type": "choice", "instructions": "Who should review this change?", "criteria": {"auto": "Safe to merge on green CI", "peer": "Any engineer on the team", "owner": "The code owner of the touched area", "security": "Security review required"}}
+  },
+  "gate": {"action": "pr.automerge", "favorable": {"touches_auth": "no", "has_tests": "yes", "severity": "<=Minor", "reviewer": "auto"}, "minProbability": 0.7, "autoConfidence": 0.92, "refuseBelow": 0.3}
+}

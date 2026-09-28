@@ -1,0 +1,14 @@
+{
+  "id": "task-readiness",
+  "name": "Task readiness",
+  "description": "Is a task ready for review or stuck? State = task record plus its recent events.",
+  "state_source": "events",
+  "order": ["stuck", "needs_human", "next", "risk"],
+  "questions": {
+    "stuck": {"type": "noul", "instructions": "The agent is looping or has stopped making progress on this task.", "criteria": {"true": "Repeated identical attempts, or no progress events for a long period", "false": "Events show forward movement"}},
+    "needs_human": {"type": "noul", "instructions": "A human decision is required before the agent can continue.", "criteria": {"true": "The agent is waiting on approval, credentials, or a product decision", "false": "The agent can proceed on its own"}},
+    "next": {"type": "choice", "instructions": "What should the operator do next for this task?", "criteria": {"wait": "Nothing; the agent is progressing", "ping": "Send a short nudge or clarification", "review": "Open the output and review it now", "cancel": "Stop the task; it is off course", "retry": "Restart from the last good state"}},
+    "risk": {"type": "score", "instructions": "How risky is the task's current trajectory for production?", "criteria": ["None", "Low", "Medium", "High"]}
+  },
+  "gate": {"action": "task.autocontinue", "favorable": {"stuck": "no", "needs_human": "no", "risk": "<=Low"}, "minProbability": 0.7, "autoConfidence": 0.85, "refuseBelow": 0.3}
+}
