@@ -256,6 +256,9 @@ func newModel(cfg config) model {
 	q.PromptStyle = keyStyle
 	m.picker.query = q
 	m.rebuildRows()
+	// Init schedules the spinner loop when this is set; kickAnim must not
+	// start a second one on the first feed message
+	m.animPending = m.needsAnim()
 	return m
 }
 
@@ -301,7 +304,7 @@ func (m model) Init() tea.Cmd {
 	if m.demo != nil {
 		cmds = append(cmds, demoTick())
 	}
-	if m.needsAnim() {
+	if m.animPending {
 		cmds = append(cmds, animTick())
 	}
 	return tea.Batch(cmds...)

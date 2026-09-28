@@ -58,12 +58,21 @@ var ansiRe = regexp.MustCompile(`\x1b\[[0-9;?]*[a-zA-Z]`)
 
 func stripANSI(s string) string { return ansiRe.ReplaceAllString(s, "") }
 
+// oneLine flattens control characters that would add screen lines or move
+// the cursor: feed text (titles, status lines, events) is untrusted.
+func oneLine(s string) string {
+	if !strings.ContainsAny(s, "\t\r\n") {
+		return s
+	}
+	return strings.NewReplacer("\t", "  ", "\r\n", " ", "\n", " ", "\r", " ").Replace(s)
+}
+
 // fit truncates (ANSI-aware) and pads s to exactly w columns.
 func fit(s string, w int) string {
 	if w <= 0 {
 		return ""
 	}
-	s = strings.ReplaceAll(s, "\t", "  ")
+	s = oneLine(s)
 	if lipgloss.Width(s) > w {
 		s = truncate.StringWithTail(s, uint(w), "…")
 	}
@@ -96,6 +105,7 @@ func pane(title string, lines []string, w, h int, focused bool) string {
 		bc = gold
 	}
 	border := lipgloss.NewStyle().Foreground(bc)
+	title = oneLine(title)
 	t := titleStyle.Render(title)
 	if !focused {
 		t = mutedStyle.Bold(true).Render(title)

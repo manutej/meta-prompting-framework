@@ -324,6 +324,9 @@ func (m model) applyJevDone(msg jevDoneMsg) (tea.Model, tea.Cmd) {
 			m.jv.state, m.jv.stateFor, m.jv.stateErr = msg.state, key, nil
 		}
 	}
+	if err != nil {
+		return m, tea.Batch(cmds...) // keep the red "not saved" toast on screen
+	}
 	label := strings.ToUpper(string(rc.Decision))
 	if msg.pack.Gate == nil {
 		label = "done"
@@ -377,7 +380,7 @@ func (m model) updateJev(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 			return m, m.warn("no receipt yet · enter runs the pack")
 		}
 		rc := m.jv.result.receipt
-		return m.openComposer(composerJev, "", rc.StateRef, &rc)
+		return m.openComposer(composerJev, "", receiptTaskID(rc), &rc)
 	case "e", "i":
 		switch src {
 		case "text":
@@ -533,10 +536,19 @@ func (m model) sendReceipt(note string) (model, tea.Cmd) {
 		return m, m.warn("no receipt yet · enter runs the pack")
 	}
 	rc := m.jv.result.receipt
-	if _, err := m.outbox.Send(harness.Command{Type: "jev.receipt", TaskID: rc.StateRef, Text: note, Data: rc}); err != nil {
+	if _, err := m.outbox.Send(harness.Command{Type: "jev.receipt", TaskID: receiptTaskID(rc), Text: note, Data: rc}); err != nil {
 		return m, m.fail("outbox: " + err.Error())
 	}
 	return m, m.ok("receipt sent → harness")
+}
+
+// receiptTaskID is the task a receipt is about: only task-sourced packs have
+// one; for diff and file packs the state ref is a path, not a task id.
+func receiptTaskID(rc jev.Receipt) string {
+	if rc.StateSource == "task" || rc.StateSource == "events" {
+		return rc.StateRef
+	}
+	return ""
 }
 
 // ---------- history ----------
@@ -928,10 +940,16 @@ func (m model) jevReceiptLines(p *jev.Pack, r *jevResult, iw int) []string {
 	for id := range rc.Answers {
 		ids = append(ids, id)
 	}
+	for id := range p.Questions {
+		if _, ok := rc.Answers[id]; !ok {
+			ids = append(ids, id) // asked but unanswered: shown as n/a
+		}
+	}
 	sort.Strings(ids)
 	for _, id := range orderIDs(p.QuestionIDs(), ids) {
 		a, ok := rc.Answers[id]
 		if !ok {
+			lines = append(lines, fit(keyStyle.Render(id)+" "+qtypeBadge(p.Questions[id].Type)+"  "+warnStyle.Render("n/a")+mutedStyle.Render(" · no answer"), iw), "")
 			continue
 		}
 		lines = append(lines, renderAnswer(id, a, iw)...)

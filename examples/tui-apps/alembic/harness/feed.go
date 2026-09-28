@@ -50,13 +50,19 @@ func (f *Feed) Poll() ([]FeedRecord, error) {
 	f.offset += int64(len(data))
 	f.buf = append(f.buf, data...)
 
+	// only complete lines are parsed; an unterminated trailing partial line
+	// stays in the buffer for the next poll so it is delivered exactly once
+	var complete, rest []byte
+	if last := lastNewline(f.buf); last < 0 {
+		rest = f.buf
+	} else {
+		complete, rest = f.buf[:last+1], f.buf[last+1:]
+	}
 	var out []FeedRecord
-	sc := bufio.NewScanner(bytesReader(f.buf))
+	sc := bufio.NewScanner(bytesReader(complete))
 	sc.Buffer(make([]byte, 1<<20), 1<<24)
-	consumed := 0
 	for sc.Scan() {
 		line := sc.Bytes()
-		consumed += len(line) + 1
 		if len(line) == 0 {
 			continue
 		}
@@ -69,22 +75,7 @@ func (f *Feed) Poll() ([]FeedRecord, error) {
 		}
 		out = append(out, r)
 	}
-	// keep an unterminated trailing partial line for the next poll
-	if consumed > len(f.buf) {
-		consumed = len(f.buf)
-	}
-	if len(f.buf) > 0 && f.buf[len(f.buf)-1] != '\n' {
-		last := lastNewline(f.buf)
-		if last >= 0 && len(out) > 0 {
-			f.buf = append([]byte{}, f.buf[last+1:]...)
-			// the partial line was parsed as a record only if it was valid JSON; drop it and re-read next time
-			if pr, ok := parsePartial(f.buf); ok && len(out) > 0 && sameRecord(out[len(out)-1], pr) {
-				out = out[:len(out)-1]
-			}
-		}
-		return out, nil
-	}
-	f.buf = f.buf[:0]
+	f.buf = append([]byte{}, rest...)
 	return out, nil
 }
 
@@ -95,20 +86,6 @@ func lastNewline(b []byte) int {
 		}
 	}
 	return -1
-}
-
-func parsePartial(b []byte) (FeedRecord, bool) {
-	var r FeedRecord
-	if err := json.Unmarshal(b, &r); err != nil {
-		return r, false
-	}
-	return r, true
-}
-
-func sameRecord(a, b FeedRecord) bool {
-	x, _ := json.Marshal(a)
-	y, _ := json.Marshal(b)
-	return string(x) == string(y)
 }
 
 type byteReader struct {

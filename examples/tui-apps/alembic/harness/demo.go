@@ -176,7 +176,7 @@ func (d *Demo) Step(s *Snapshot) error {
 			}
 		}
 	}
-	acks, err := d.ackPings()
+	acks, err := d.ackPings(s)
 	if err == nil {
 		recs = append(recs, acks...)
 	}
@@ -186,7 +186,7 @@ func (d *Demo) Step(s *Snapshot) error {
 	return d.write(recs...)
 }
 
-func (d *Demo) ackPings() ([]FeedRecord, error) {
+func (d *Demo) ackPings(s *Snapshot) ([]FeedRecord, error) {
 	fh, err := os.Open(d.OutboxPath)
 	if err != nil {
 		return nil, nil
@@ -215,11 +215,25 @@ func (d *Demo) ackPings() ([]FeedRecord, error) {
 				recs = append(recs, FeedRecord{Type: "task.event", Event: &Event{TaskID: c.TaskID, Level: LevelWarn, Text: "operator: " + c.Text}})
 			}
 		case "task.cancel":
+			// an upsert replaces every field but elements/created, so it
+			// must carry the whole task, not just the changed fields
+			t, ok := s.Tasks[c.TaskID]
+			if !ok {
+				continue
+			}
+			nt := *t
+			nt.State, nt.StatusLine, nt.Updated = StateFailed, "cancelled by operator", time.Now().UTC()
 			recs = append(recs, FeedRecord{Type: "task.event", Event: &Event{TaskID: c.TaskID, Level: LevelError, Text: "cancelled by operator"}})
-			recs = append(recs, FeedRecord{Type: "task.upsert", Task: &Task{ID: c.TaskID, State: StateFailed, StatusLine: "cancelled by operator"}})
+			recs = append(recs, FeedRecord{Type: "task.upsert", Task: &nt})
 		case "task.retry":
+			t, ok := s.Tasks[c.TaskID]
+			if !ok {
+				continue
+			}
+			nt := *t
+			nt.State, nt.Progress, nt.StatusLine, nt.Updated = StateQueued, 0, "queued for retry", time.Now().UTC()
 			recs = append(recs, FeedRecord{Type: "task.event", Event: &Event{TaskID: c.TaskID, Level: LevelOK, Text: "retry requested by operator"}})
-			recs = append(recs, FeedRecord{Type: "task.upsert", Task: &Task{ID: c.TaskID, State: StateQueued, Progress: 0, StatusLine: "queued for retry"}})
+			recs = append(recs, FeedRecord{Type: "task.upsert", Task: &nt})
 		}
 	}
 	return recs, nil
