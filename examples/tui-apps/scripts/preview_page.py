@@ -16,6 +16,10 @@ APPS = [
      "Custom Gold/Navy rendering, file tree, outline that tracks the heading under the cursor, spring-animated jumps, a fuzzy file finder and in-document search.",
      [("45", "headless tests"), ("~3.5k", "lines of Go"), ("6", "bugs fixed in red-team")],
      "tab panes · ctrl+p find · / search · [ ] headings · b sidebar · e edit"),
+    ("alembic", "Operator console for an agent harness, with Jev",
+     "Every task's live status line grouped by production workflow; open its files, PRs and logs; ping the agent and see the ack; manage git worktrees; run Jev question packs and read calibrated answers and a gate verdict. Plugs into the Ormus harness through two append-only JSONL files.",
+     [("41", "headless tests"), ("~5.7k", "lines of Go"), ("live", "Jev verified, 586 ms")],
+     "j/k · p ping · J jev · o open · x cancel · 1-4 tabs · ctrl+k palette"),
 ]
 
 def frames_of(path):
@@ -59,7 +63,7 @@ figcaption::before{content:"▸ ";color:var(--gold)}
 a{color:var(--gold)}
 @media (prefers-reduced-motion:no-preference){.jump a{transition:border-color .15s}}
 </style>
-<h1>Three terminal apps, captured live</h1>
+<h1>Four terminal apps, captured live</h1>
 <p class="lede">Every frame below is a <b>real render</b>: each binary was run in a pseudo-terminal at 120×40, driven with the keys from its demo script, and the screen buffer was converted to HTML. Nothing is mocked or retouched.</p>
 <div class="jump">""")
     for name, *_ in APPS:

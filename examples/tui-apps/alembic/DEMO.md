@@ -53,3 +53,21 @@ cd examples/tui-apps/alembic && go build -o alembic . && ./alembic --demo
 - Receipts carry a digest, not a signature: they detect accidents, not tampering.
 - The state preview and result rows are truncated to the pane width rather than wrapped.
 - Pings sent counts this session only; acks are read from the feed and persist.
+
+## Live verification (recorded 2026-09-28)
+
+One real call through `jev/client.go` against `api.typesafe.ai/v1/systemone` with the
+`ping-priority` pack and the state *"URGENT: prod checkout is returning 500s after the
+idempotency deploy — stop the rollout now and roll back."*:
+
+```
+model=jev-1.13.0  latency=586ms  usage={input_tokens:475 output_tokens:78}
+urgent     noul   0.99
+blocking   noul   0.86
+intent     choice stop 0.99  {answer:0 change:0.01 continue:0 stop:0.99}  conf 0.98
+```
+
+Wire format, parsing of all three answer types, retry and error mapping are covered by
+`jev/jev_test.go` against a local HTTP stub; this run confirms the same code against the
+real service. `--demo` deliberately uses the mock so rehearsals never spend calls on
+simulated tasks; pass `--live` to gate the demo tasks with the real model.
