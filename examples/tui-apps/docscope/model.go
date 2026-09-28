@@ -256,6 +256,9 @@ func (m *model) openNode(n *node, keepScroll bool) tea.Cmd {
 	} else {
 		m.pendingPercent = 0
 	}
+	if n != m.current {
+		m.doc = renderedDoc{}
+	}
 	m.current = n
 	m.raw = ""
 	m.hasDoc = false
@@ -533,6 +536,8 @@ func (m model) onResize(w, h int) (model, tea.Cmd) {
 	m.ready = true
 	if !m.sideInit {
 		m.sideInit = true
+		m.filesH = m.sideTarget()
+	} else if !m.sideAnimating {
 		m.filesH = m.sideTarget()
 	}
 	var cmd tea.Cmd
@@ -930,16 +935,18 @@ func (m model) onMouse(msg tea.MouseMsg) (model, tea.Cmd) {
 		case regionFiles:
 			m.setFocus(paneFiles)
 			l := m.layout()
-			if row >= 0 && row < l.filesH-2 && m.fileOffset+row < len(m.rows) {
+			tick := m.ensureTicking()
+			// a collapsed pane shows a summary line, not rows
+			if l.filesH-2 > 1 && row >= 0 && row < l.filesH-2 && m.fileOffset+row < len(m.rows) {
 				m.fileCursor = m.fileOffset + row
 				mm, cmd := m.activateRow(m.fileCursor)
-				return mm, tea.Batch(cmd, m.ensureTicking())
+				return mm, tea.Batch(cmd, tick)
 			}
-			return m, m.ensureTicking()
+			return m, tick
 		case regionOutline:
 			m.setFocus(paneOutline)
 			l := m.layout()
-			if row >= 0 && row < l.outlineH-2 && m.outlineOffset+row < len(m.doc.headings) {
+			if l.outlineH-2 > 1 && row >= 0 && row < l.outlineH-2 && m.outlineOffset+row < len(m.doc.headings) {
 				m.outlineCursor = m.outlineOffset + row
 				return m, tea.Batch(m.scrollTo(m.doc.headings[m.outlineCursor].line), m.ensureTicking())
 			}

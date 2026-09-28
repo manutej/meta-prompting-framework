@@ -29,10 +29,16 @@ func buildTree(root string) (*node, []*node, error) {
 		return nil, nil, err
 	}
 	rootNode := &node{name: filepath.Base(root), path: root, isDir: true, expanded: true}
+	// WalkDir does not follow symlinks, so walk the resolved root while keeping
+	// the user's path for display.
+	walkRoot := root
+	if r, err := filepath.EvalSymlinks(root); err == nil {
+		walkRoot = r
+	}
 	var rels []string
-	err := filepath.WalkDir(root, func(p string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(walkRoot, func(p string, d fs.DirEntry, err error) error {
 		if err != nil {
-			if p == root {
+			if p == walkRoot {
 				return err
 			}
 			if d != nil && d.IsDir() {
@@ -40,10 +46,10 @@ func buildTree(root string) (*node, []*node, error) {
 			}
 			return nil
 		}
-		if p == root {
+		if p == walkRoot {
 			return nil
 		}
-		rel, rerr := filepath.Rel(root, p)
+		rel, rerr := filepath.Rel(walkRoot, p)
 		if rerr != nil {
 			return nil
 		}

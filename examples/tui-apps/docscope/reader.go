@@ -51,7 +51,7 @@ func readDoc(path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return strings.ReplaceAll(string(b), "\r\n", "\n"), nil
+	return strings.ReplaceAll(strings.ReplaceAll(string(b), "\r\n", "\n"), "\r", "\n"), nil
 }
 
 func openFileCmd(path string, width, seq int) tea.Cmd {
