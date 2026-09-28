@@ -146,3 +146,23 @@ Run it from the TUI (`t` now, `--triage-interval 60s` on a timer, `s` to sort by
 
 Without `TYPESAFE_API_KEY` (or without `--live`) the tick is deterministic-only or uses
 the mock, and every record says so (`"deterministic": true` / `"mock": true`).
+
+### Live evidence (2026-09-28)
+
+One triage tick over the demo snapshot (seven tasks, one made 35 minutes stale, one
+with an unanswered ping), against the real model:
+
+```
+jev_calls=1  jev_tasks=4  input_tokens=1753  cost=$0.000074  latency=567ms
+#1 1.00 ping    T-1042 blocked   [blocked, priority 2, 1 ping unanswered, jev: needs human 0.95]
+#2 0.89 retry   T-0990 failed    [failed]                     stuck 0.60  needs human 0.67
+#3 0.73 wait    T-1041 running   [running, priority 1, stale 35m]  stuck 0.17  needs human 0.06
+#4 0.70 review  T-0977 review    [review, jev: needs human 0.89]
+#5 0.35 wait    T-0981 running   deterministic only
+#6 0.20 wait    T-2202 queued    deterministic only
+#7 0.00 wait    T-2201 done
+```
+
+Worth noticing: the stale running task was *not* escalated — Jev read the events and
+judged it progressing (stuck 0.17), so staleness alone did not produce a false ping.
+At this cost, a tick every minute is about $0.10 a day for a harness of this size.
