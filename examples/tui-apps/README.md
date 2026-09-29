@@ -1,8 +1,9 @@
-# TUI Apps — Gold & Navy
+# Ormus TUI
 
-Terminal applications built on the Charmbracelet stack (Bubble Tea, Bubbles, Lip Gloss,
-Glamour, Huh, Harmonica). Gold `#D4AF37` (ANSI 178) for action and focus, Navy `#1B365D`
-(ANSI 24) for structure. Every app is its own Go module and can be copied out standalone.
+Terminal applications for the Ormus agent harness, built on the Charmbracelet stack (Bubble Tea,
+Bubbles, Lip Gloss, Glamour, Huh, Harmonica) in Ormus brand chrome (`BRAND.md`): gold `#d4a017`
+for action and focus, navy `#0e1830` for structure. Every app is its own Go module and can be
+copied out standalone. Start with `HANDOFF.md`; the harness port lives in `alembic/PORT.md`.
 
 ## Demo apps
 
@@ -19,7 +20,7 @@ Each has a `DEMO.md` with a timed talk track and an honest "known limits" sectio
 make demo                    # builds the four demo apps
 ./nexus-command/nexus-command
 ./gitscope/gitscope          # run inside any git repo
-./docscope/docscope ../../docs
+./docscope/docscope alembic/docs
 ./alembic/alembic --demo      # self-contained simulated harness; add TYPESAFE_API_KEY for live Jev
 ```
 

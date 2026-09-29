@@ -9,8 +9,15 @@ every expected marker and that the process exits 0 on `q`.
 """
 import fcntl, os, pty, re, select, signal, struct, sys, termios, time
 
+import subprocess
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-REPO = os.path.dirname(os.path.dirname(ROOT))
+# gitscope and alembic run inside the enclosing git repository, whichever repo this workspace lives in
+try:
+    REPO = subprocess.run(["git", "-C", ROOT, "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True).stdout.strip()
+except Exception:
+    REPO = ROOT
+# docscope reads a docs directory if the repo has one, else the workspace itself
+DOCS = next((d for d in (os.path.join(REPO, "docs"), os.path.join(ROOT, "alembic", "docs")) if os.path.isdir(d)), ROOT)
 ESC, TAB, ENTER, CTRL_K, CTRL_P = b"\x1b", b"\t", b"\r", b"\x0b", b"\x10"
 
 # name: dict(bin, cwd, args, first (marker that means the first frame is up),
@@ -30,7 +37,7 @@ SPECS = {
         expect=[b"gitscope", b"Status", b"Branches", b"Commits", b"Stash"],
     ),
     "docscope": dict(
-        cwd=REPO, args=["docs"], first=b"docscope",
+        cwd=REPO, args=[DOCS], first=b"docscope",
         keys=[(0.8, b"j"), (0.4, ENTER), (1.2, TAB), (0.4, TAB), (0.4, b"j"), (0.4, b"j"), (0.4, CTRL_P), (0.4, b"spec"),
               (0.6, ENTER), (1.0, b"?"), (0.8, b"?")],
         expect=[b"docscope", b"Files", b"Outline", b"Find file"],
