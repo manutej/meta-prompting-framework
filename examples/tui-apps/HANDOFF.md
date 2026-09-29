@@ -38,10 +38,12 @@ to the outbox for the harness. Log: `~/.alembic/triage.jsonl`. Docs: `docs/JEV.m
 
 ## OPEN
 
-1. **Ormus-Solutions/ormus-agent-harness is not readable from this session** (proxy: "GitHub access to this repository is
-   not enabled for this session. Use add_repo"). Once attached, the work is: read its task/agent model, map it onto the
-   feed contract (probably 100–200 lines in their TS), and adjust `harness/types.go` only if a field is genuinely missing.
-   Everything else already runs against the demo harness.
+1. **Ormus-Solutions/ormus-agent-harness is still not readable from this session** (proxy: "GitHub access to this
+   repository is not enabled for this session. Use add_repo" — on 2026-09-29, after the user granted their GitHub
+   account access; the *session* attachment is a separate step in the Claude Code web environment settings, or vendor
+   a snapshot into this repo). The port is prepared regardless: `alembic/PORT.md` (handoff, step 0 questions,
+   day-1/day-2 plan, acceptance), `alembic/contrib/` (adapter + TypeScript triage with tests and Go parity).
+   First hour with the repo: answer PORT.md Step 0, then wire `feed.task(...)` at the one place state changes.
 2. Research findings not in the repo yet: Hermes TUI docs (the bar): transcript-first, Ctrl+T live dock, Ctrl+X session
    switcher, `/agents` `/tasks` overlay, sessions in `~/.hermes/state.db` (SQLite), `jev-typesafe` plugin exposes
    `jev_check/route/score/evaluate`. Ormus public kits (all TypeScript, Jev-based): aurum-gate (gate router),

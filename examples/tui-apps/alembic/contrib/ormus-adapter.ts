@@ -47,7 +47,8 @@ function appendLine(path: string, obj: unknown): void {
 }
 
 export class AlembicFeed {
-  constructor(readonly path: string = process.env.ALEMBIC_FEED ?? join(defaultDir(), "feed.jsonl")) {}
+  readonly path: string;
+  constructor(path: string = process.env.ALEMBIC_FEED ?? join(defaultDir(), "feed.jsonl")) { this.path = path; }
   private write(type: string, payload: Record<string, unknown>): void {
     appendLine(this.path, { v: 1, ts: new Date().toISOString(), type, ...payload });
   }
@@ -61,7 +62,8 @@ export class AlembicFeed {
 export class AlembicOutbox {
   private offset = 0;
   private seen = new Set<string>();
-  constructor(readonly path: string = process.env.ALEMBIC_OUTBOX ?? join(defaultDir(), "outbox.jsonl")) {}
+  readonly path: string;
+  constructor(path: string = process.env.ALEMBIC_OUTBOX ?? join(defaultDir(), "outbox.jsonl")) { this.path = path; }
 
   /** Read commands appended since the last call. Duplicate ids are dropped (one intent, one effect). */
   poll(): Command[] {
