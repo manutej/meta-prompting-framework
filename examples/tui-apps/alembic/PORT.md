@@ -45,7 +45,12 @@ claim tested, docs + a signed `LOGS.md` entry per change, and no push or PR unle
 8. **Timer:** `OperatorCron` wakes an agent turn (costs a model call) — wrong for triage. A plain interval belongs in `serve.ts`; for now
    `ormus triage --every 60s` runs client-side, and cron can call it.
 
-## What landed (PR 1, branch `feature/tasks-triage` in the harness, local, not pushed)
+## What landed (PR 1, branch `feature/tasks-triage` in the harness — pushed, pullable)
+
+`git fetch origin feature/tasks-triage && git checkout feature/tasks-triage` in `Ormus-Solutions/ormus-agent-harness`
+(head `d794936`). Handoff: `docs/triage.md` there. Adversarial pass `CLAUDE-20260930-TRIAGE-QA`: 8 defects fixed
+(cursor identity across re-rank, chip width, tie-break, `pending` scope, journal keys, completions, event names,
+line head), one double count removed from the score; 10-scenario operator eval 9/10 → 11/11; harness suite 533 tests.
 
 `packages/harness/src/tui/triage.ts` (pure scoring, same record shape as `jev/triage.go` / `contrib/triage.ts`),
 ranked Agent Dashboard with `#n ▰▰▱▱ next` chips and reason lines, `/triage`, `ormus triage [--json] [--every]`,

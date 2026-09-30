@@ -39,7 +39,8 @@ to the outbox for the harness. Log: `~/.alembic/triage.jsonl`. Docs: `docs/JEV.m
 ## OPEN
 
 1. **Harness attached and cloned 2026-09-30** (`/home/user/ormus-agent-harness`, `main` @ 5df85bc). PR 1 (`feature/tasks-triage`)
-   is committed locally there — see `alembic/PORT.md` "What landed". Not pushed: the harness forbids push/PR without Diego's word.
+   is pushed to `Ormus-Solutions/ormus-agent-harness` (head `d794936`), red-teamed and eval-tuned — see `alembic/PORT.md`
+   "What landed". No PR opened (harness hard contract 5 leaves that to Diego).
    Previously: **not readable from this session** (proxy: "GitHub access to this
    repository is not enabled for this session. Use add_repo" — on 2026-09-29, after the user granted their GitHub
    account access; the *session* attachment is a separate step in the Claude Code web environment settings, or vendor
